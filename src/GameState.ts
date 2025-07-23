@@ -5,6 +5,7 @@
 import { GRID_WIDTH, GRID_HEIGHT } from './constants';
 
 export const grid = new Uint8Array(GRID_WIDTH * GRID_HEIGHT); // 0 = empty, 1 = sand, etc.
+grid.fill(0); // Initialize grid to empty
 
 export const gameState = {
   grid,
