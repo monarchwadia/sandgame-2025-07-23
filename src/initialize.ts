@@ -4,20 +4,33 @@
 import type { GameState } from './GameState';
 import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
+import { createSidebar } from './createSidebar';
 
 export function initialize(target: HTMLElement, gameState: GameState) {
+  // Create a wrapper for layout
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'fixed';
+  wrapper.style.top = '0';
+  wrapper.style.left = '0';
+  wrapper.style.width = '100vw';
+  wrapper.style.height = '100vh';
+  wrapper.style.display = 'flex';
+  wrapper.style.flexDirection = 'row';
+  wrapper.style.zIndex = '999';
+  target.appendChild(wrapper);
+
+  // Canvas setup
   const canvas = document.createElement('canvas');
-  canvas.style.position = 'fixed';
-  canvas.style.top = '0';
-  canvas.style.left = '0';
-  canvas.style.width = '100vw';
-  canvas.style.height = '100vh';
-  canvas.style.zIndex = '999';
+  canvas.style.flex = '1 1 auto';
   canvas.style.display = 'block';
   canvas.style.background = 'black';
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  target.appendChild(canvas);
+  wrapper.appendChild(canvas);
+
+  // Sidebar setup using HOC
+  const sidebar = createSidebar();
+  wrapper.appendChild(sidebar);
 
   // initialize with random sand
   for (let i = 0; i < gameState.grid.length; i++) {
