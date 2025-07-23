@@ -2,6 +2,7 @@
 // Higher-order component for fullscreen WebGL canvas with empty render loop
 
 import type { GameState } from './GameState';
+import { renderBoard } from './renderBoard';
 
 export function withWebGLCanvas(target: HTMLElement, gameState: GameState) {
   const canvas = document.createElement('canvas');
@@ -34,11 +35,8 @@ export function withWebGLCanvas(target: HTMLElement, gameState: GameState) {
   });
 
   function renderLoop() {
-    // Empty render loop
-    // gameState can be used here
-    if (gl) {
-      // Future rendering code goes here
-    }
+    // Use renderBoard for rendering
+    renderBoard(target, gameState);
     requestAnimationFrame(renderLoop);
   }
   renderLoop();
