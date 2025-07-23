@@ -2,6 +2,8 @@ import { getIndex } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { TREETOP_COLOR } from '../palette';
 
+export const TREETOP_IDX = 5;
+
 export const treetopParticle: ParticleType = {
     name: 'treetop',
     color: TREETOP_COLOR, // forest green

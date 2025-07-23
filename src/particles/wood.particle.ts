@@ -2,6 +2,8 @@ import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { WOOD_COLOR } from '../palette';
 
+export const WOOD_IDX = 4;
+
 export const woodParticle: ParticleType = {
     name: 'wood',
     color: WOOD_COLOR, // rich brown wood

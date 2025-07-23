@@ -2,6 +2,8 @@ import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { WATER_COLOR } from '../palette';
 
+export const WATER_IDX = 2;
+
 export const waterParticle: ParticleType = {
     name: 'water',
     color: WATER_COLOR, // blue, semi-transparent

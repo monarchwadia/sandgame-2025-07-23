@@ -2,6 +2,8 @@ import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { GRASS_COLOR } from '../palette';
 
+export const GRASS_IDX = 3;
+
 export const grassParticle: ParticleType = {
     name: 'grass',
     color: GRASS_COLOR, // vibrant green grass

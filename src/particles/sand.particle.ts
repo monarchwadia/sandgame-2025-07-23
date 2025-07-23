@@ -2,6 +2,8 @@ import { getIndex, getBelow, getLeft, getRight } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SAND_COLOR } from '../palette';
 
+export const SAND_IDX = 1;
+
 export const sandParticle: ParticleType = {
     name: 'sand',
     // color: [255, 220, 80, 255], // warm yellow RGBA
