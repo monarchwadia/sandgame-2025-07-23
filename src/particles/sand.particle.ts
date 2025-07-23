@@ -2,6 +2,7 @@ import { getIndex, getBelow, getLeft, getRight } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SAND_COLOR } from '../palette';
 import { SKY_IDX } from './sky.particle';
+import { WATER_IDX } from './water.particle';
 
 export const SAND_IDX = 1;
 
@@ -14,8 +15,8 @@ export const sandParticle: ParticleType = {
         const i = getIndex(x, y, width);
         if (y < height - 1) {
             const below = getBelow(x, y, width);
-            if (grid[below] === SKY_IDX) {
-                grid[i] = SKY_IDX;
+            if (grid[below] === SKY_IDX || grid[below] === WATER_IDX) {
+                grid[i] = grid[below] === WATER_IDX ? WATER_IDX : SKY_IDX;
                 grid[below] = SAND_IDX;
                 return;
             }
