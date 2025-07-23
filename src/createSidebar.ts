@@ -1,6 +1,13 @@
 // src/Sidebar.ts
 // Higher-order component for responsive sidebar
 
+// Simulated OpenAI call: reverses the input string
+export async function callOpenAIAndReverse(input: string): Promise<string> {
+  // Simulate network delay
+  await new Promise(res => setTimeout(res, 400));
+  return input.split('').reverse().join('');
+}
+
 export function createSidebar(): HTMLElement {
   const sidebar = document.createElement('aside');
   sidebar.innerHTML = `<div style="padding:2rem; color:#fff; font-family:sans-serif;">
@@ -16,10 +23,11 @@ export function createSidebar(): HTMLElement {
     const form = sidebar.querySelector('#ai-draw-form') as HTMLFormElement | null;
     const input = sidebar.querySelector('#ai-draw-input') as HTMLInputElement | null;
     if (form && input) {
-      form.onsubmit = (e) => {
+      form.onsubmit = async (e) => {
         e.preventDefault();
         if (input.value.trim()) {
-          alert('AI would draw: ' + input.value.trim());
+          const aiOutput = await callOpenAIAndReverse(input.value.trim());
+          alert('AI response: ' + aiOutput);
           input.value = '';
         }
       };
