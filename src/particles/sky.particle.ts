@@ -1,48 +1,33 @@
 
 import type { ParticleType } from "./particles.types";
 
-
-// Singleton array of day/night cycle colors (night, dawn, morning, noon, evening, dusk)
-const DAY_NIGHT_COLORS: [number, number, number][] = [
-  [44, 20, 60],    // night (midnight)
-  [120, 80, 120],  // dawn
-  [200, 180, 120], // morning
-  [120, 180, 255], // noon
-  [255, 180, 120], // evening
-  [80, 40, 120],   // dusk
-  [44, 20, 60],    // night (wrap to midnight)
+// Hardcoded sky colors for each hour (0-23) with smooth day/night transitions
+const PRECOMPUTED_SKY_COLORS: string[] = [
+  'rgba(20, 15, 45, 0.9)',   // 0: midnight - deep night
+  'rgba(25, 18, 50, 0.9)',   // 1: late night
+  'rgba(30, 20, 55, 0.8)',   // 2: very early morning
+  'rgba(35, 25, 60, 0.8)',   // 3: pre-dawn
+  'rgba(60, 40, 80, 0.8)',   // 4: dawn begins
+  'rgba(120, 80, 140, 1)',   // 5: dawn - purple
+  'rgba(180, 120, 200, 1)',  // 6: sunrise - pink/purple
+  'rgba(220, 160, 240, 1)',  // 7: early morning - light purple
+  'rgba(200, 220, 240, 1)',  // 8: morning - light blue
+  'rgba(160, 200, 220, 1)',  // 9: late morning
+  'rgba(140, 180, 240, 1)',  // 10: mid-morning
+  'rgba(120, 170, 255, 1)',  // 11: late morning
+  'rgba(100, 160, 255, 1)',  // 12: noon - bright blue
+  'rgba(110, 170, 255, 1)',  // 13: early afternoon
+  'rgba(120, 180, 250, 1)',  // 14: afternoon
+  'rgba(140, 190, 240, 1)',  // 15: mid-afternoon
+  'rgba(160, 180, 220, 1)',  // 16: late afternoon - soft blue
+  'rgba(240, 160, 200, 1)',  // 17: early evening - pink
+  'rgba(255, 140, 180, 1)',  // 18: sunset begins - pink/red
+  'rgba(255, 120, 160, 1)',  // 19: sunset - vibrant pink
+  'rgba(200, 100, 160, 0.9)', // 20: dusk - purple/pink
+  'rgba(120, 60, 120, 0.9)',  // 21: twilight - purple
+  'rgba(60, 30, 80, 0.9)',    // 22: late twilight - deep purple
+  'rgba(35, 20, 60, 0.9)',    // 23: night - purple
 ];
-
-const scale = [0, 4, 7, 12, 17, 20, 24]; // hours for each color
-
-function lerpColorString(c1: [number, number, number], c2: [number, number, number], t: number, alpha: number): string {
-  const r = Math.round(c1[0] + (c2[0] - c1[0]) * t);
-  const g = Math.round(c1[1] + (c2[1] - c1[1]) * t);
-  const b = Math.round(c1[2] + (c2[2] - c1[2]) * t);
-  const color = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  return color;
-}
-
-// Precompute 24 colors for each hour
-const PRECOMPUTED_SKY_COLORS: string[] = (() => {
-  const arr: string[] = [];
-  for (let hour = 0; hour < 24; hour++) {
-    let idx = 0;
-    for (let i = 0; i < scale.length - 1; i++) {
-      if (hour >= scale[i] && hour < scale[i + 1]) {
-        idx = i;
-        break;
-      }
-    }
-    const t = (hour - scale[idx]) / (scale[idx + 1] - scale[idx]);
-    const c1 = DAY_NIGHT_COLORS[idx];
-    const c2 = DAY_NIGHT_COLORS[idx + 1];
-    let alpha = 1;
-    if (hour < 5 || hour > 19) alpha = 0.7;
-    arr[hour] = lerpColorString(c1, c2, t, alpha);
-  }
-  return arr;
-})();
 
 export const skyParticle: ParticleType = {
     name: 'sky',
