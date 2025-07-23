@@ -4,6 +4,7 @@
 // Particle colors - realistic but saturated desert theme
 export const SAND_COLOR = 'rgba(255, 200, 120, 1)'; // warm golden sand
 export const WATER_COLOR = 'rgba(30, 144, 255, 0.8)'; // deep blue water, semi-transparent
+export const GRASS_COLOR = 'rgba(60, 180, 75, 1)'; // vibrant grass green
 
 // Sky colors for each hour (0-23) - realistic day/night cycle with rich saturation
 export const SKY_COLORS = [
