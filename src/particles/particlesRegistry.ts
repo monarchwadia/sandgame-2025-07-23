@@ -5,6 +5,7 @@ import { SKY_IDX, skyParticle } from './sky.particle';
 import { WATER_IDX, waterParticle } from './water.particle';
 import { WOOD_IDX, woodParticle } from './wood.particle';
 import { TREETOP_IDX, treetopParticle } from './treetop.particle';
+import { HUMAN_IDX, humanParticle } from './human.particle';
 
 export const particlesRegistry: { [key: number]: ParticleType } = {
     [SKY_IDX]: skyParticle,
@@ -12,5 +13,6 @@ export const particlesRegistry: { [key: number]: ParticleType } = {
     [WATER_IDX]: waterParticle,
     [GRASS_IDX]: grassParticle,
     [WOOD_IDX]: woodParticle,
-    [TREETOP_IDX]: treetopParticle
+    [TREETOP_IDX]: treetopParticle,
+    [HUMAN_IDX]: humanParticle
 };
