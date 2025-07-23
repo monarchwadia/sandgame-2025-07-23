@@ -1,5 +1,5 @@
 export interface ParticleType {
     name: string;
-    color: [number, number, number, number];
+    color: string;
     behavior?: (grid: Uint8Array, width: number, height: number, x: number, y: number) => void;
 }

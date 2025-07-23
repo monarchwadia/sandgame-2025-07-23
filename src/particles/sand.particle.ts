@@ -3,7 +3,8 @@ import type { ParticleType } from './particles.types';
 
 export const sandParticle: ParticleType = {
     name: 'sand',
-    color: [255, 220, 80, 255], // warm yellow RGBA
+    // color: [255, 220, 80, 255], // warm yellow RGBA
+    color: 'rgba(255, 220, 80, 1)', // warm yellow RGBA as string
     behavior: function(grid, width, height, x, y) {
         // Sand falls down if possible, else cascades left/right
         const i = getIndex(x, y, width);
