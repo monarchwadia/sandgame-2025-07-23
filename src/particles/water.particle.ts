@@ -1,4 +1,4 @@
-import { getIndex, getBelow, getLeft, getRight } from '../gridUtils';
+import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { WATER_COLOR } from '../palette';
 
@@ -8,6 +8,20 @@ export const waterParticle: ParticleType = {
     behavior: function(grid, width, height, x, y) {
         // Water falls down if possible, else flows left/right
         const i = getIndex(x, y, width);
+        // Check adjacent sand and possibly turn it into grass
+        const adjacents = [
+            getIndex(x - 1, y, width),
+            getIndex(x + 1, y, width),
+            getIndex(x, y - 1, width),
+            getIndex(x, y + 1, width)
+        ];
+        for (const idx of adjacents) {
+            if (idx >= 0 && idx < grid.length && grid[idx] === 1) { // 1 = sand
+                if (Math.random() < 0.01) {
+                    grid[idx] = 3; // 3 = grass
+                }
+            }
+        }
         if (y < height - 1) {
             const below = getBelow(x, y, width);
             if (grid[below] === 0) {
