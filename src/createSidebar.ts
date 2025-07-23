@@ -6,7 +6,25 @@ export function createSidebar(): HTMLElement {
   sidebar.innerHTML = `<div style="padding:2rem; color:#fff; font-family:sans-serif;">
     <h2>Sand Game Sidebar</h2>
     <p>Controls and info go here.</p>
+    <form id="ai-draw-form" style="margin-top:2rem; display:flex; flex-direction: column; gap:0.5rem;">
+      <input id="ai-draw-input" type="text" placeholder="Describe what to draw..." style="flex:1; padding:0.5rem 1rem; border-radius:8px; border:none; font-size:1rem;" />
+      <button type="submit" style="background:#ffda50; color:#222; border:none; border-radius:8px; padding:0.5rem 1rem; font-size:1rem; cursor:pointer;">Go!</button>
+    </form>
   </div>`;
+  // Dummy submit handler for AI draw form
+  setTimeout(() => {
+    const form = sidebar.querySelector('#ai-draw-form') as HTMLFormElement | null;
+    const input = sidebar.querySelector('#ai-draw-input') as HTMLInputElement | null;
+    if (form && input) {
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        if (input.value.trim()) {
+          alert('AI would draw: ' + input.value.trim());
+          input.value = '';
+        }
+      };
+    }
+  }, 0);
   sidebar.style.width = '320px';
   sidebar.style.background = 'rgba(30,30,40,0.98)';
   sidebar.style.boxShadow = '0 0 16px rgba(0,0,0,0.2)';
