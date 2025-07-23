@@ -1,6 +1,5 @@
 import './style.css';
-import { withWebGLCanvas } from './WebGLCanvas';
-import type { GameState } from './types';
+import { withWebGLCanvas } from './withWebGLCanvas';
+import { gameState as gameStateSingleton } from './GameState';
 
-const gameState: GameState = {};
-withWebGLCanvas(document.body, gameState);
+withWebGLCanvas(document.body, gameStateSingleton);

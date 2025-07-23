@@ -1,7 +1,7 @@
 // src/WebGLCanvas.ts
 // Higher-order component for fullscreen WebGL canvas with empty render loop
 
-import type { GameState } from './types';
+import type { GameState } from './GameState';
 
 export function withWebGLCanvas(target: HTMLElement, gameState: GameState) {
   const canvas = document.createElement('canvas');
