@@ -1,6 +1,7 @@
 import { getIndex, getBelow, getLeft, getRight } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SAND_COLOR } from '../palette';
+import { SKY_IDX } from './sky.particle';
 
 export const SAND_IDX = 1;
 
@@ -13,29 +14,29 @@ export const sandParticle: ParticleType = {
         const i = getIndex(x, y, width);
         if (y < height - 1) {
             const below = getBelow(x, y, width);
-            if (grid[below] === 0) {
-                grid[i] = 0;
-                grid[below] = 1;
+            if (grid[below] === SKY_IDX) {
+                grid[i] = SKY_IDX;
+                grid[below] = SAND_IDX;
                 return;
             }
             const left = getLeft(x, y, width);
             const right = getRight(x, y, width);
-            const canLeft = x > 0 && grid[left] === 0;
-            const canRight = x < width - 1 && grid[right] === 0;
+            const canLeft = x > 0 && grid[left] === SKY_IDX;
+            const canRight = x < width - 1 && grid[right] === SKY_IDX;
             if (canLeft && canRight) {
                 if (Math.random() < 0.5) {
-                    grid[i] = 0;
-                    grid[left] = 1;
+                    grid[i] = SKY_IDX;
+                    grid[left] = SAND_IDX;
                 } else {
-                    grid[i] = 0;
-                    grid[right] = 1;
+                    grid[i] = SKY_IDX;
+                    grid[right] = SAND_IDX;
                 }
             } else if (canLeft) {
-                grid[i] = 0;
-                grid[left] = 1;
+                grid[i] = SKY_IDX;
+                grid[left] = SAND_IDX;
             } else if (canRight) {
-                grid[i] = 0;
-                grid[right] = 1;
+                grid[i] = SKY_IDX;
+                grid[right] = SAND_IDX;
             }
         }
     }

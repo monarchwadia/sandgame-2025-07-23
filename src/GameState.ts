@@ -3,9 +3,10 @@
 
 // Sand game state using 1D typed array
 import { GRID_WIDTH, GRID_HEIGHT } from './constants';
+import { SKY_IDX } from './particles/sky.particle';
 
 export const grid = new Uint8Array(GRID_WIDTH * GRID_HEIGHT); // 0 = empty, 1 = sand, etc.
-grid.fill(0); // Initialize grid to empty
+grid.fill(SKY_IDX); // Initialize grid to empty
 
 export const gameState = {
   grid,

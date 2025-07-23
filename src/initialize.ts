@@ -3,6 +3,9 @@
 
 import { FPS } from './constants';
 import type { GameState } from './GameState';
+import { SAND_IDX } from './particles/sand.particle';
+import { SKY_IDX } from './particles/sky.particle';
+import { WATER_IDX } from './particles/water.particle';
 import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
 
@@ -31,11 +34,11 @@ export function initialize(target: HTMLElement, gameState: GameState) {
   for (let i = 0; i < gameState.grid.length; i++) {
     // initialize with random sand
     const randomint = Math.random();
-    gameState.grid[i] = randomint < 0.2 ? 1 : 0;
+    gameState.grid[i] = randomint < 0.2 ? SAND_IDX : SKY_IDX;
 
     // for top row, add ranodm water
     if (i < gameState.width) {
-      gameState.grid[i] = randomint < 0.1 ? 2 : gameState.grid[i]; // 2 = water
+      gameState.grid[i] = randomint < 0.1 ? WATER_IDX : gameState.grid[i]; // 2 = water
     }
   }
 

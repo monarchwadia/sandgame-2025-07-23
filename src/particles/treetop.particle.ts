@@ -1,6 +1,8 @@
 import { getIndex } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { TREETOP_COLOR } from '../palette';
+import { WOOD_IDX } from './wood.particle';
+import { SKY_IDX } from './sky.particle';
 
 export const TREETOP_IDX = 5;
 
@@ -11,8 +13,6 @@ export const treetopParticle: ParticleType = {
         // Rule 2: Treetop can only grow if:
         // - Has exactly 1 wood/treetop neighbor (stays connected)
         // - Has ≤ 1 other treetop neighbor (low competition)
-        
-        const i = getIndex(x, y, width);
         
         // Check all 4 adjacent cells
         const neighbors = [
@@ -31,12 +31,12 @@ export const treetopParticle: ParticleType = {
                 const neighborIndex = getIndex(neighbor.x, neighbor.y, width);
                 const neighborType = grid[neighborIndex];
                 
-                if (neighborType === 4 || neighborType === 5) { // wood or treetop
+                if (neighborType === WOOD_IDX || neighborType === TREETOP_IDX) { // wood or treetop
                     woodTreetopNeighbors++;
-                    if (neighborType === 5) {
+                    if (neighborType === TREETOP_IDX) {
                         treetopNeighbors++;
                     }
-                } else if (neighborType === 0) { // sky - potential growth spot
+                } else if (neighborType === SKY_IDX) { // sky - potential growth spot
                     growthCandidates.push(neighborIndex);
                 }
             }
@@ -50,7 +50,7 @@ export const treetopParticle: ParticleType = {
             // 10% chance to grow each frame (adjust as needed)
             if (Math.random() < 0.01) {
                 const randomSpot = growthCandidates[Math.floor(Math.random() * growthCandidates.length)];
-                grid[randomSpot] = 5; // 5 = treetop
+                grid[randomSpot] = TREETOP_IDX; // 5 = treetop
             }
         }
     }

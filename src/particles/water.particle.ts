@@ -1,6 +1,9 @@
 import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { WATER_COLOR } from '../palette';
+import { SAND_IDX } from './sand.particle';
+import { GRASS_IDX } from './grass.particle';
+import { SKY_IDX } from './sky.particle';
 
 export const WATER_IDX = 2;
 
@@ -18,39 +21,39 @@ export const waterParticle: ParticleType = {
             getIndex(x, y + 1, width)
         ];
         for (const idx of adjacents) {
-            if (idx >= 0 && idx < grid.length && grid[idx] === 1) { // 1 = sand
+            if (idx >= 0 && idx < grid.length && grid[idx] === SAND_IDX) {
                 if (Math.random() < 0.01) {
-                    grid[idx] = 3; // 3 = grass
+                    grid[idx] = GRASS_IDX;
                 }
             }
         }
         if (y < height - 1) {
             const below = getBelow(x, y, width);
-            if (grid[below] === 0) {
-                grid[i] = 0;
-                grid[below] = 2; // 2 = water
+            if (grid[below] === SKY_IDX) {
+                grid[i] = SKY_IDX;
+                grid[below] = WATER_IDX;
                 return;
             }
         }
         // Try to move left or right if not moving down
         const left = getIndex(x - 1, y, width);
         const right = getIndex(x + 1, y, width);
-        const canLeft = x > 0 && grid[left] === 0;
-        const canRight = x < width - 1 && grid[right] === 0;
+        const canLeft = x > 0 && grid[left] === SKY_IDX;
+        const canRight = x < width - 1 && grid[right] === SKY_IDX;
         if (canLeft && canRight) {
             if (Math.random() < 0.5) {
-                grid[i] = 0;
-                grid[left] = 2;
+                grid[i] = SKY_IDX;
+                grid[left] = WATER_IDX;
             } else {
-                grid[i] = 0;
-                grid[right] = 2;
+                grid[i] = SKY_IDX;
+                grid[right] = WATER_IDX;
             }
         } else if (canLeft) {
-            grid[i] = 0;
-            grid[left] = 2;
+            grid[i] = SKY_IDX;
+            grid[left] = WATER_IDX;
         } else if (canRight) {
-            grid[i] = 0;
-            grid[right] = 2;
+            grid[i] = SKY_IDX;
+            grid[right] = WATER_IDX;
         }
     }
 };

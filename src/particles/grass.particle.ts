@@ -1,6 +1,9 @@
 import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { GRASS_COLOR } from '../palette';
+import { WATER_IDX } from './water.particle';
+import { WOOD_IDX } from './wood.particle';
+import { SKY_IDX } from './sky.particle';
 
 export const GRASS_IDX = 3;
 
@@ -21,7 +24,7 @@ export const grassParticle: ParticleType = {
         for (const adj of adjacents) {
             if (adj.x >= 0 && adj.x < width && adj.y >= 0 && adj.y < height) {
                 const adjIndex = getIndex(adj.x, adj.y, width);
-                if (grid[adjIndex] === 2) { // 2 = water
+                if (grid[adjIndex] === WATER_IDX) { // 2 = water
                     touchingWater = true;
                     break;
                 }
@@ -30,8 +33,8 @@ export const grassParticle: ParticleType = {
         
         if (touchingWater && y > 0) {
             const above = getIndex(x, y - 1, width);
-            if (grid[above] === 0) { // sky above
-                grid[above] = 4; // 4 = wood
+            if (grid[above] === SKY_IDX) { // sky above
+                grid[above] = WOOD_IDX;
                 return;
             }
         }
@@ -39,9 +42,9 @@ export const grassParticle: ParticleType = {
         // Grass only falls vertically, no cascading
         if (y < height - 1) {
             const below = getBelow(x, y, width);
-            if (grid[below] === 0) {
-                grid[i] = 0;
-                grid[below] = 3; // 3 = grass
+            if (grid[below] === SKY_IDX) {
+                grid[i] = SKY_IDX;
+                grid[below] = GRASS_IDX; // 3 = grass
             }
         }
     }
