@@ -4,7 +4,6 @@
 import type { GameState } from './GameState';
 import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
-import { createSidebar } from './createSidebar';
 
 export function initialize(target: HTMLElement, gameState: GameState) {
   // Create a wrapper for layout
@@ -27,10 +26,6 @@ export function initialize(target: HTMLElement, gameState: GameState) {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   wrapper.appendChild(canvas);
-
-  // Sidebar setup using HOC
-  const sidebar = createSidebar();
-  wrapper.appendChild(sidebar);
 
   // initialize with random sand
   for (let i = 0; i < gameState.grid.length; i++) {
