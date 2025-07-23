@@ -3,6 +3,7 @@
 
 import type { GameState } from './GameState';
 import { renderBoard } from './renderBoard';
+import { updateGameState } from './updateGameState';
 
 export function initialize(target: HTMLElement, gameState: GameState) {
   const canvas = document.createElement('canvas');
@@ -18,21 +19,22 @@ export function initialize(target: HTMLElement, gameState: GameState) {
   canvas.height = window.innerHeight;
   target.appendChild(canvas);
 
-  const gl: WebGLRenderingContext  = canvas.getContext('webgl')!;
-  // Check if WebGL is supported
-  if (!gl) {
-    alert('WebGL not supported');
+  const ctx = canvas.getContext('2d')!;
+  // check
+  if (!ctx) {
+    alert('Canvas 2D context not supported');
     return;
   }
-  
-  gl.viewport(0, 0, canvas.width, canvas.height);
-  gl.clearColor(0, 0, 0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
 
   function renderLoop() {
-    // Use renderBoard for rendering
-    renderBoard(canvas, gl, gameState);
+    renderBoard(canvas, ctx, gameState);
     requestAnimationFrame(renderLoop);
   }
   renderLoop();
+
+  function updateLoop() {
+    updateGameState(gameState);
+    setTimeout(updateLoop, 1000 / 60);
+  }
+  updateLoop();
 }
