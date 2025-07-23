@@ -1,8 +1,15 @@
 // src/updateGameState.ts
 // No-op update function for sand game state
 
+import { DAYNIGHT_SPEED_HPS, FPS } from './constants';
 import type { GameState } from './GameState';
-import { particlesRegistry } from './particles/particles';
+import { particlesRegistry } from './particles/particlesRegistry';
+
+let fps = FPS;
+let daynightSpeedHps = DAYNIGHT_SPEED_HPS;
+let secondsPerHour = 1 / daynightSpeedHps / 2;
+let framesToNextHour = Math.floor(fps * secondsPerHour);
+let countdown = framesToNextHour;
 
 export function updateGameState(gameState: GameState): void {
   const { grid, width, height } = gameState;
@@ -16,4 +23,11 @@ export function updateGameState(gameState: GameState): void {
   }
   // Copy newGrid back to grid
   grid.set(newGrid);
+
+  // Countdown for timeOfDay increment
+  countdown--;
+  if (countdown <= 0) {
+    gameState.timeOfDay = (gameState.timeOfDay + 1) % 24;
+    countdown = framesToNextHour;
+  }
 }

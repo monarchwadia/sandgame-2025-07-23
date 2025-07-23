@@ -9,6 +9,7 @@ grid.fill(0); // Initialize grid to empty
 
 export const gameState = {
   grid,
+  timeOfDay: 0, // 0-23 for hours of the day
   width: GRID_WIDTH,
   height: GRID_HEIGHT,
 };

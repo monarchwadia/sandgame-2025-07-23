@@ -1,6 +1,7 @@
 // src/WebGLCanvas.ts
 // Higher-order component for fullscreen WebGL canvas with empty render loop
 
+import { FPS } from './constants';
 import type { GameState } from './GameState';
 import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
@@ -47,7 +48,7 @@ export function initialize(target: HTMLElement, gameState: GameState) {
 
   function updateLoop() {
     updateGameState(gameState);
-    setTimeout(updateLoop, 1000 / 60);
+    setTimeout(updateLoop, 1000 / FPS);
   }
   updateLoop();
 }
