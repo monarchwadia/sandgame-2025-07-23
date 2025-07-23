@@ -28,9 +28,15 @@ export function initialize(target: HTMLElement, gameState: GameState) {
   canvas.height = window.innerHeight;
   wrapper.appendChild(canvas);
 
-  // initialize with random sand
   for (let i = 0; i < gameState.grid.length; i++) {
-    gameState.grid[i] = Math.random() < 0.2 ? 1 : 0;
+    // initialize with random sand
+    const randomint = Math.random();
+    gameState.grid[i] = randomint < 0.2 ? 1 : 0;
+
+    // for top row, add ranodm water
+    if (i < gameState.width) {
+      gameState.grid[i] = randomint < 0.1 ? 2 : gameState.grid[i]; // 2 = water
+    }
   }
 
   const ctx = canvas.getContext('2d')!;
