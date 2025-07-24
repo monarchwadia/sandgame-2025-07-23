@@ -5,11 +5,35 @@ import { LIGHTNING_COLOR } from '../palette';
 
 export const LIGHTNING_IDX = 9;
 
+function eraseContiguousLightning(grid: Uint8Array, width: number, height: number, x: number, y: number) {
+    const stack = [[x, y]];
+    while (stack.length > 0) {
+        const [cx, cy] = stack.pop()!;
+        const ci = getIndex(cx, cy, width);
+        if (grid[ci] !== LIGHTNING_IDX) continue;
+        grid[ci] = SKY_IDX;
+        // Check all 8 neighbors
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                if (dx === 0 && dy === 0) continue;
+                const nx = cx + dx;
+                const ny = cy + dy;
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    const ni = getIndex(nx, ny, width);
+                    if (grid[ni] === LIGHTNING_IDX) {
+                        stack.push([nx, ny]);
+                    }
+                }
+            }
+        }
+    }
+}
+
 export const lightningParticle: ParticleType = {
     name: 'lightning',
     color: LIGHTNING_COLOR,
     behavior: function(grid, width, height, x, y, _gameState) {
-        // If any of bottom, bottom-left, or bottom-right is non-sky and non-lightning, erase all lightning
+        // If any of bottom, bottom-left, or bottom-right is non-sky and non-lightning, erase contiguous lightning
         if (y < height - 1) {
             const below = getIndex(x, y + 1, width);
             const belowLeft = x > 0 ? getIndex(x - 1, y + 1, width) : -1;
@@ -19,11 +43,7 @@ export const lightningParticle: ParticleType = {
             if (belowRight !== -1) cells.push(belowRight);
             for (const idx of cells) {
                 if (idx >= 0 && grid[idx] !== SKY_IDX && grid[idx] !== LIGHTNING_IDX) {
-                    for (let i = 0; i < grid.length; i++) {
-                        if (grid[i] === LIGHTNING_IDX) {
-                            grid[i] = SKY_IDX;
-                        }
-                    }
+                    eraseContiguousLightning(grid, width, height, x, y);
                     return;
                 }
             }
