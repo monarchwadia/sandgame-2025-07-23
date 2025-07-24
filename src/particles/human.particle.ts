@@ -14,7 +14,7 @@ export const HUMAN_IDX = 6;
 export const humanParticle: ParticleType = {
     name: 'human',
     color: HUMAN_COLOR, // simple gray for now
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
+    behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
         const i = getIndex(x, y, width);
         // Always try to fall down if possible
         if (y < height - 1) {

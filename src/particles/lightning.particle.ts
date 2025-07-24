@@ -10,7 +10,7 @@ import { FIRE_IDX } from './fire.particle';
 
 export const LIGHTNING_IDX = 9;
 
-function eraseContiguousLightning(grid: Uint8Array, width: number, height: number, x: number, y: number) {
+function eraseContiguousLightning(grid: Uint32Array, width: number, height: number, x: number, y: number) {
     const stack = [[x, y]];
     while (stack.length > 0) {
         const [cx, cy] = stack.pop()!;

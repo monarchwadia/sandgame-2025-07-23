@@ -11,7 +11,7 @@ export const WOOD_IDX = 4;
 export const woodParticle: ParticleType = {
     name: 'wood',
     color: WOOD_COLOR, // rich brown wood
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
+    behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, gameState: GameState) {
         // Wood behaves exactly like grass - only falls vertically, no cascading
         const i = getIndex(x, y, width);
         if (y < height - 1) {

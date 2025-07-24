@@ -11,7 +11,7 @@ export const FIRE_IDX = 8;
 export const fireParticle: ParticleType = {
     name: 'fire',
     color: FIRE_COLOR,
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid, width, _height, x, y) {
         const i = getIndex(x, y, width);
         // Fire burns out with a small chance
         if (Math.random() < 0.05) {

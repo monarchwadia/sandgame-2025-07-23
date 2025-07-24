@@ -11,7 +11,7 @@ import { particlesRegistry } from './particles/particlesRegistry';
 export function updateGameState(gameState: GameState): void {
   const { grid, width, height } = gameState;
   // Copy grid to avoid moving sand multiple times per frame
-  const newGrid = new Uint8Array(grid);
+  const newGrid = new Uint32Array(grid);
   // Iterate from bottom up so sand falls correctly
   for (let y = height - 2; y >= 0; y--) {
     for (let x = 0; x < width; x++) {

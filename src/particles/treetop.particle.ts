@@ -11,7 +11,7 @@ export const TREETOP_IDX = 5;
 export const treetopParticle: ParticleType = {
     name: 'treetop',
     color: TREETOP_COLOR, // forest green
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
+    behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, gameState: GameState) {
         const currentHour = gameState.timeOfDay;
         const [startHour, endHour] = HOUR_INDEXES.photosynthesis;
         // Check all 4 adjacent cells

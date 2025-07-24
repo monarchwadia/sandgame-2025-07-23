@@ -12,7 +12,7 @@ export const WATER_IDX = 2;
 export const waterParticle: ParticleType = {
     name: 'water',
     color: WATER_COLOR, // blue, semi-transparent
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
+    behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, gameState: GameState) {
         // Water evaporates during highHeat hours
         const currentHour = gameState.timeOfDay;
         const [startHeat, endHeat] = HOUR_INDEXES.highHeat;

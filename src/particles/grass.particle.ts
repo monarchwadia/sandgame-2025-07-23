@@ -12,7 +12,7 @@ export const GRASS_IDX = 3;
 export const grassParticle: ParticleType = {
     name: 'grass',
     color: GRASS_COLOR, // vibrant green grass
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
+    behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, gameState: GameState) {
         const i = getIndex(x, y, width);
         
         // Check if grass is touching water AND has sky above it

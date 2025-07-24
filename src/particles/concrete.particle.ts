@@ -1,8 +1,7 @@
 import type { GameState } from '../GameState';
-import { getIndex, getBelow } from '../gridUtils';
+import { getIndex } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
-import { WATER_IDX } from './water.particle';
 import { CONCRETE_COLOR } from '../palette';
 import { HUMAN_IDX } from './human.particle';
 
@@ -13,7 +12,7 @@ export const CONCRETE_IDX = 7;
 export const concreteParticle: ParticleType = {
     name: 'concrete',
     color: CONCRETE_COLOR, // gray concrete
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
+    behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
         // Only grow if a human is within 1 space (in any direction)
         let humanNearby = false;
         for (let dx = -1; dx <= 1; dx++) {

@@ -11,7 +11,7 @@ export const sandParticle: ParticleType = {
     name: 'sand',
     // color: [255, 220, 80, 255], // warm yellow RGBA
     color: SAND_COLOR, // warm yellow RGBA as string
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
+    behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
         // Sand falls down if possible, else cascades left/right
         const i = getIndex(x, y, width);
         if (y < height - 1) {
