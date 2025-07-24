@@ -16,4 +16,7 @@ export function timeOfDayProcessor(gameState: GameState) {
     gameState.timeOfDay = (gameState.timeOfDay + 1) % 24;
     countdown = framesToNextHour;
   }
+  
+  // Add smooth time progress (0.0 to 1.0 within the current hour)
+  gameState.timeProgressPct = 1 - (countdown / framesToNextHour);
 }
