@@ -7,6 +7,8 @@ export const WATER_COLOR = 'rgba(30, 144, 255, 0.8)'; // deep blue water, semi-t
 export const GRASS_COLOR = 'rgba(60, 180, 75, 1)'; // vibrant grass green
 export const WOOD_COLOR = 'rgba(139, 69, 19, 1)'; // rich brown wood
 export const TREETOP_COLOR = 'rgba(34, 139, 34, 1)'; // forest green
+export const CONCRETE_COLOR = 'rgba(128, 128, 128, 1)'; // gray concrete
+export const HUMAN_COLOR = 'rgba(180, 60, 220, 1)'; // vibrant purple for human
 
 // Sky colors for each hour (0-23) - realistic day/night cycle with rich saturation
 export const SKY_COLORS = [

@@ -7,12 +7,13 @@ import { WOOD_IDX } from './wood.particle';
 import { WATER_IDX } from './water.particle';
 import { CONCRETE_IDX } from './concrete.particle';
 import type { GameState } from '../GameState';
+import { HUMAN_COLOR } from '../palette';
 
 export const HUMAN_IDX = 6;
 
 export const humanParticle: ParticleType = {
     name: 'human',
-    color: 'rgba(200, 200, 200, 1)', // simple gray for now
+    color: HUMAN_COLOR, // simple gray for now
     behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
         const i = getIndex(x, y, width);
         // Always try to fall down if possible
