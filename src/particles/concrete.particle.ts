@@ -6,16 +6,18 @@ import { WATER_IDX } from './water.particle';
 import { CONCRETE_COLOR } from '../palette';
 import { HUMAN_IDX } from './human.particle';
 
+const GROWTH_FACTOR = 1;
+
 export const CONCRETE_IDX = 7;
 
 export const concreteParticle: ParticleType = {
     name: 'concrete',
     color: CONCRETE_COLOR, // gray concrete
     behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
-        // Only grow if a human is within 3 spaces (in any direction)
+        // Only grow if a human is within 1 space (in any direction)
         let humanNearby = false;
-        for (let dx = -3; dx <= 3; dx++) {
-            for (let dy = -3; dy <= 3; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
                 if (dx === 0 && dy === 0) continue;
                 const nx = x + dx;
                 const ny = y + dy;
@@ -29,29 +31,50 @@ export const concreteParticle: ParticleType = {
             if (humanNearby) break;
         }
         if (!humanNearby) return;
-        // Grow left or right if possible (slowly)
-        if (Math.random() < 0.01) {
-            if (x > 0 && grid[getIndex(x - 1, y, width)] === SKY_IDX) {
-                grid[getIndex(x - 1, y, width)] = CONCRETE_IDX;
-                return;
+
+        // Helper function to check if there's concrete support within a given distance below
+        const hasSupport = (checkX: number, checkY: number, supportDistance: number): boolean => {
+            for (let dy = 1; dy <= supportDistance; dy++) {
+                const supportY = checkY + dy;
+                if (supportY >= height) return true; // Ground level counts as support
+                if (grid[getIndex(checkX, supportY, width)] === CONCRETE_IDX) {
+                    return true;
+                }
             }
+            return false;
+        };
+
+        // Pyramid slope control: require support within 1 block below for horizontal growth
+        const slopeDistance = 1;
+        
+        // Grow left or right if possible (slowly) and there's adequate support
+        if (Math.random() < GROWTH_FACTOR) {
+            // Try to grow left
+            if (x > 0 && grid[getIndex(x - 1, y, width)] === SKY_IDX) {
+                if (hasSupport(x - 1, y, slopeDistance)) {
+                    grid[getIndex(x - 1, y, width)] = CONCRETE_IDX;
+                    return;
+                }
+            }
+            // Try to grow right
             if (x < width - 1 && grid[getIndex(x + 1, y, width)] === SKY_IDX) {
-                grid[getIndex(x + 1, y, width)] = CONCRETE_IDX;
-                return;
+                if (hasSupport(x + 1, y, slopeDistance)) {
+                    grid[getIndex(x + 1, y, width)] = CONCRETE_IDX;
+                    return;
+                }
             }
         }
-        // If both left and right are blocked, and sw/s/se are concrete, grow above
-        const leftBlocked = x === 0 || grid[getIndex(x - 1, y, width)] !== SKY_IDX;
-        const rightBlocked = x === width - 1 || grid[getIndex(x + 1, y, width)] !== SKY_IDX;
-        if (leftBlocked && rightBlocked && y > 0) {
-            const sw = x > 0 && y < height - 1 ? grid[getIndex(x - 1, y + 1, width)] : -1;
-            const s = y < height - 1 ? grid[getIndex(x, y + 1, width)] : -1;
-            const se = x < width - 1 && y < height - 1 ? grid[getIndex(x + 1, y + 1, width)] : -1;
-            const baseOk = [sw, s, se].every(idx => idx === CONCRETE_IDX);
-            if (baseOk && grid[getIndex(x, y - 1, width)] === SKY_IDX) {
-                if (Math.random() < 0.01) {
-                    grid[getIndex(x, y - 1, width)] = CONCRETE_IDX;
-                }
+
+        // Grow upward only when there's a solid base (maintains pyramid structure)
+        if (y > 0 && grid[getIndex(x, y - 1, width)] === SKY_IDX) {
+            // Check for solid foundation below (at least 3 concrete blocks in a row)
+            const hasFoundation = y < height - 1 && 
+                (x === 0 || grid[getIndex(x - 1, y + 1, width)] === CONCRETE_IDX) &&
+                grid[getIndex(x, y + 1, width)] === CONCRETE_IDX &&
+                (x === width - 1 || grid[getIndex(x + 1, y + 1, width)] === CONCRETE_IDX);
+            
+            if (hasFoundation && Math.random() < GROWTH_FACTOR) {
+                grid[getIndex(x, y - 1, width)] = CONCRETE_IDX;
             }
         }
     }
