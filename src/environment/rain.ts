@@ -8,9 +8,9 @@ const RAIN_FRAMES_INTERVAL = 10; // how often to rain (frames)
 let rainCountdown = RAIN_FRAMES_INTERVAL;
 
 // Rain event state
-let rainActive = false;
+let rainActive = true;
 let rainStartHour = 0;
-let rainDurationHours = 0;
+let rainDurationHours = 4;
 let nextRainHour = Math.floor(Math.random() * (240 - 24 + 1)) + 24; // 24-240 hours
 
 export function rainProcessor(gameState: GameState) {
@@ -31,6 +31,10 @@ export function rainProcessor(gameState: GameState) {
       const y = 0;
       const i = y * width + x;
       grid[i] = 2;
+      // Occasionally spawn lightning during rain
+      if (Math.random() < 1) { // 5% chance per rain drop
+        grid[i] = 9; // LIGHTNING_IDX
+      }
     }
     // End rain event after duration
     if ((gameState.timeOfDay + 24 - rainStartHour) % 24 >= rainDurationHours) {

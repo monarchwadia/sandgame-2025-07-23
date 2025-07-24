@@ -10,7 +10,7 @@ grid.fill(SKY_IDX); // Initialize grid to empty
 
 export const gameState = {
   grid,
-  timeOfDay: 11, // 0-23 for hours of the day
+  timeOfDay: 0, // 0-23 for hours of the day
   timeProgressPct: 0, // 0.0-1.0 progress within current hour for smooth transitions
   width: GRID_WIDTH,
   height: GRID_HEIGHT,
