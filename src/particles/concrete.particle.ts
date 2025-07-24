@@ -1,3 +1,4 @@
+import type { GameState } from '../GameState';
 import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
@@ -8,7 +9,7 @@ export const CONCRETE_IDX = 7;
 export const concreteParticle: ParticleType = {
     name: 'concrete',
     color: 'rgba(128, 128, 128, 1)', // gray concrete
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
         // Concrete falls down if there's water or sky below, but doesn't cascade
         const i = getIndex(x, y, width);
         if (y < height - 1) {

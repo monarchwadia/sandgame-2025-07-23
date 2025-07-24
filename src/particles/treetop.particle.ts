@@ -3,13 +3,22 @@ import type { ParticleType } from './particles.types';
 import { TREETOP_COLOR } from '../palette';
 import { WOOD_IDX } from './wood.particle';
 import { SKY_IDX } from './sky.particle';
+import { HOUR_INDEXES } from '../constants';
+import type { GameState } from '../GameState';
 
 export const TREETOP_IDX = 5;
 
 export const treetopParticle: ParticleType = {
     name: 'treetop',
     color: TREETOP_COLOR, // forest green
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
+        // Only grow during photosynthesis hours
+        const currentHour = gameState.timeOfDay;
+        const [startHour, endHour] = HOUR_INDEXES.photosynthesis;
+        if (currentHour < startHour || currentHour > endHour) {
+            return; // No growth outside photosynthesis hours
+        }
+        
         // Rule 2: Treetop can only grow if:
         // - Has exactly 1 wood/treetop neighbor (stays connected)
         // - Has ≤ 1 other treetop neighbor (low competition)

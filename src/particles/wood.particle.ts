@@ -3,13 +3,15 @@ import type { ParticleType } from './particles.types';
 import { WOOD_COLOR } from '../palette';
 import { TREETOP_IDX } from './treetop.particle';
 import { SKY_IDX } from './sky.particle';
+import { HOUR_INDEXES } from '../constants';
+import type { GameState } from '../GameState';
 
 export const WOOD_IDX = 4;
 
 export const woodParticle: ParticleType = {
     name: 'wood',
     color: WOOD_COLOR, // rich brown wood
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
         // Wood behaves exactly like grass - only falls vertically, no cascading
         const i = getIndex(x, y, width);
         if (y < height - 1) {
@@ -20,6 +22,12 @@ export const woodParticle: ParticleType = {
             }
         }
 
+        // Only grow during photosynthesis hours
+        const currentHour = gameState.timeOfDay;
+        const [startHour, endHour] = HOUR_INDEXES.photosynthesis;
+        if (currentHour < startHour || currentHour > endHour) {
+            return; // No growth outside photosynthesis hours
+        }
         
         // Limit wood growth to max height of 7
         if (y > 0) {

@@ -3,6 +3,7 @@ import type { ParticleType } from './particles.types';
 import { SAND_COLOR } from '../palette';
 import { SKY_IDX } from './sky.particle';
 import { WATER_IDX } from './water.particle';
+import type { GameState } from '../GameState';
 
 export const SAND_IDX = 1;
 
@@ -10,7 +11,7 @@ export const sandParticle: ParticleType = {
     name: 'sand',
     // color: [255, 220, 80, 255], // warm yellow RGBA
     color: SAND_COLOR, // warm yellow RGBA as string
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
         // Sand falls down if possible, else cascades left/right
         const i = getIndex(x, y, width);
         if (y < height - 1) {

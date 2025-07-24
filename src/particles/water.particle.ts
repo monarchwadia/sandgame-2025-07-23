@@ -4,13 +4,14 @@ import { WATER_COLOR } from '../palette';
 import { SAND_IDX } from './sand.particle';
 import { GRASS_IDX } from './grass.particle';
 import { SKY_IDX } from './sky.particle';
+import type { GameState } from '../GameState';
 
 export const WATER_IDX = 2;
 
 export const waterParticle: ParticleType = {
     name: 'water',
     color: WATER_COLOR, // blue, semi-transparent
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
         // Water falls down if possible, else flows left/right
         const i = getIndex(x, y, width);
         // Check adjacent sand and possibly turn it into grass

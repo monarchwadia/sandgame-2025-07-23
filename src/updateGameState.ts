@@ -15,7 +15,7 @@ export function updateGameState(gameState: GameState): void {
   // Iterate from bottom up so sand falls correctly
   for (let y = height - 2; y >= 0; y--) {
     for (let x = 0; x < width; x++) {
-      particlesRegistry[newGrid[y * width + x]]?.behavior?.(newGrid, width, height, x, y);
+      particlesRegistry[newGrid[y * width + x]]?.behavior?.(newGrid, width, height, x, y, gameState);
     }
   }
   // Copy newGrid back to grid

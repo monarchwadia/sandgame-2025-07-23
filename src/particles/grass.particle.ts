@@ -4,13 +4,15 @@ import { GRASS_COLOR } from '../palette';
 import { WATER_IDX } from './water.particle';
 import { WOOD_IDX } from './wood.particle';
 import { SKY_IDX } from './sky.particle';
+import { HOUR_INDEXES } from '../constants';
+import type { GameState } from '../GameState';
 
 export const GRASS_IDX = 3;
 
 export const grassParticle: ParticleType = {
     name: 'grass',
     color: GRASS_COLOR, // vibrant green grass
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
         const i = getIndex(x, y, width);
         
         // Check if grass is touching water AND has sky above it
@@ -32,10 +34,15 @@ export const grassParticle: ParticleType = {
         }
         
         if (touchingWater && y > 0) {
-            const above = getIndex(x, y - 1, width);
-            if (grid[above] === SKY_IDX) { // sky above
-                grid[above] = WOOD_IDX;
-                return;
+            // Only sprout wood during photosynthesis hours
+            const currentHour = gameState.timeOfDay;
+            const [startHour, endHour] = HOUR_INDEXES.photosynthesis;
+            if (currentHour >= startHour && currentHour <= endHour) {
+                const above = getIndex(x, y - 1, width);
+                if (grid[above] === SKY_IDX) { // sky above
+                    grid[above] = WOOD_IDX;
+                    return;
+                }
             }
         }
         
