@@ -11,26 +11,13 @@ import { updateGameState } from './updateGameState';
 import { maybeSpawnHumans } from './environment/maybeSpawnHumansProcess';
 
 export function initialize(target: HTMLElement, gameState: GameState) {
-  // Create a wrapper for layout
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'fixed';
-  wrapper.style.top = '0';
-  wrapper.style.left = '0';
-  wrapper.style.width = '100vw';
-  wrapper.style.height = '100vh';
-  wrapper.style.display = 'flex';
-  wrapper.style.flexDirection = 'row';
-  wrapper.style.zIndex = '999';
-  target.appendChild(wrapper);
-
   // Canvas setup
   const canvas = document.createElement('canvas');
-  canvas.style.flex = '1 1 auto';
   canvas.style.display = 'block';
   canvas.style.background = 'black';
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  wrapper.appendChild(canvas);
+  target.appendChild(canvas);
 
   for (let i = 0; i < gameState.grid.length; i++) {
     // initialize with random sand
