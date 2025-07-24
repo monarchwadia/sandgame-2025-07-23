@@ -6,8 +6,6 @@ import type { GameState } from './GameState';
 import { SAND_IDX } from './particles/sand.particle';
 import { SKY_IDX } from './particles/sky.particle';
 import { WATER_IDX } from './particles/water.particle';
-import { HUMAN_IDX } from './particles/human.particle';
-import { WOOD_IDX } from './particles/wood.particle';
 import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
 import { maybeSpawnHumans } from './environment/maybeSpawnHumansProcess';
