@@ -32,7 +32,7 @@ export function rainProcessor(gameState: GameState) {
       const i = y * width + x;
       grid[i] = 2;
       // Occasionally spawn lightning during rain
-      if (Math.random() < 1) { // 5% chance per rain drop
+      if (Math.random() < 0.05) { // 5% chance per rain drop
         grid[i] = 9; // LIGHTNING_IDX
       }
     }
