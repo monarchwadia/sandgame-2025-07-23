@@ -12,17 +12,8 @@ export const treetopParticle: ParticleType = {
     name: 'treetop',
     color: TREETOP_COLOR, // forest green
     behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
-        // Only grow during photosynthesis hours
         const currentHour = gameState.timeOfDay;
         const [startHour, endHour] = HOUR_INDEXES.photosynthesis;
-        if (currentHour < startHour || currentHour > endHour) {
-            return; // No growth outside photosynthesis hours
-        }
-        
-        // Rule 2: Treetop can only grow if:
-        // - Has exactly 1 wood/treetop neighbor (stays connected)
-        // - Has ≤ 1 other treetop neighbor (low competition)
-        
         // Check all 4 adjacent cells
         const neighbors = [
             { x: x - 1, y: y },     // left
@@ -30,33 +21,41 @@ export const treetopParticle: ParticleType = {
             { x: x, y: y - 1 },     // above
             { x: x, y: y + 1 }      // below
         ];
-        
-        let woodTreetopNeighbors = 0;
+        let woodNeighbours = 0;
+        let treetopNeighbours = 0;
         let treetopNeighbors = 0;
         const growthCandidates = [];
-        
         for (const neighbor of neighbors) {
             if (neighbor.x >= 0 && neighbor.x < width && neighbor.y >= 0 && neighbor.y < height) {
                 const neighborIndex = getIndex(neighbor.x, neighbor.y, width);
                 const neighborType = grid[neighborIndex];
-                
-                if (neighborType === WOOD_IDX || neighborType === TREETOP_IDX) { // wood or treetop
-                    woodTreetopNeighbors++;
-                    if (neighborType === TREETOP_IDX) {
-                        treetopNeighbors++;
-                    }
+                if (neighborType === WOOD_IDX) { // wood
+                    woodNeighbours++;
+                } else if (neighborType === TREETOP_IDX) { // treetop
+                    treetopNeighbours++;
+                    treetopNeighbors++;
                 } else if (neighborType === SKY_IDX) { // sky - potential growth spot
                     growthCandidates.push(neighborIndex);
                 }
             }
         }
-        
+
+        const totalWoodAndTreetopNeighbors = woodNeighbours + treetopNeighbours;
+        // If not in photosynthesis hours, and not touching wood or treetop, chance to disappear
+        if (currentHour < startHour || currentHour > endHour) {
+            if (woodNeighbours === 0) {
+                if (Math.random() < 0.003) {
+                    grid[getIndex(x, y, width)] = SKY_IDX;
+                }
+            }
+            return;
+        }
         // Growth conditions (Rule 2):
         // - Must be connected (at least 1 wood/treetop neighbor)
         // - Low competition (≤ 1 treetop neighbor)
         // - Has sky to grow into
-        if (woodTreetopNeighbors >= 1 && treetopNeighbors <= 1 && growthCandidates.length > 0) {
-            // 10% chance to grow each frame (adjust as needed)
+        if (totalWoodAndTreetopNeighbors >= 1 && treetopNeighbors <= 1 && growthCandidates.length > 0) {
+            // chance to grow each frame (adjust as needed)
             if (Math.random() < 0.01) {
                 const randomSpot = growthCandidates[Math.floor(Math.random() * growthCandidates.length)];
                 grid[randomSpot] = TREETOP_IDX; // 5 = treetop

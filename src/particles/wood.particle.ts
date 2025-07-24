@@ -57,7 +57,7 @@ export const woodParticle: ParticleType = {
                 } else {
                     // random chance that the tree grows a wood
                     const above = getIndex(x, y - 1, width);
-                    if (grid[above] === SKY_IDX && Math.random() < 0.1) { // 10% chance
+                    if (grid[above] === SKY_IDX && Math.random() < 0.03) { // 10% chance
                         grid[above] = WOOD_IDX;
                     }
                 }

@@ -5,13 +5,23 @@ import { SAND_IDX } from './sand.particle';
 import { GRASS_IDX } from './grass.particle';
 import { SKY_IDX } from './sky.particle';
 import type { GameState } from '../GameState';
+import { HOUR_INDEXES } from '../constants';
 
 export const WATER_IDX = 2;
 
 export const waterParticle: ParticleType = {
     name: 'water',
     color: WATER_COLOR, // blue, semi-transparent
-    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
+    behavior: function(grid: Uint8Array, width: number, height: number, x: number, y: number, gameState: GameState) {
+        // Water evaporates during highHeat hours
+        const currentHour = gameState.timeOfDay;
+        const [startHeat, endHeat] = HOUR_INDEXES.highHeat;
+        if (currentHour >= startHeat && currentHour <= endHeat) {
+            if (Math.random() < 0.05) { // 1% chance per frame
+                grid[getIndex(x, y, width)] = SKY_IDX;
+                return;
+            }
+        }
         // Water falls down if possible, else flows left/right
         const i = getIndex(x, y, width);
         // Check adjacent sand and possibly turn it into grass

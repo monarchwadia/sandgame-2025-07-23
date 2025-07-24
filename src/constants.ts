@@ -9,4 +9,6 @@ export const CELL_HEIGHT = window.innerHeight / GRID_HEIGHT;
 export const DAYNIGHT_SPEED_HPS = 0.25; // How many hours elapse for each real second
 export const HOUR_INDEXES = {
     photosynthesis: [8, 18], // hours when sunlight is present, inclusive
+    highHeat: [12, 15], // hours when heat is high, inclusive
+    lowHeat: [0, 6], // hours when heat is low, inclusive
 }
