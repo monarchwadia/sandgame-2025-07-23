@@ -17,7 +17,7 @@ export const waterParticle: ParticleType = {
         const currentHour = gameState.timeOfDay;
         const [startHeat, endHeat] = HOUR_INDEXES.highHeat;
         if (currentHour >= startHeat && currentHour <= endHeat) {
-            if (Math.random() < 0.05) { // 1% chance per frame
+            if (Math.random() < 0.001) { // 1% chance per frame
                 grid[getIndex(x, y, width)] = SKY_IDX;
                 return;
             }

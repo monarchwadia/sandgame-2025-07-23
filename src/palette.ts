@@ -16,21 +16,21 @@ export const SKY_COLORS = [
   'rgba(25, 35, 65, 0.8)',     // 3: pre-dawn
   'rgba(45, 55, 85, 0.8)',     // 4: dawn begins - deep blue
   'rgba(80, 100, 140, 1)',     // 5: dawn - rich blue
-  'rgba(255, 150, 100, 1)',    // 6: sunrise - warm orange
-  'rgba(255, 180, 120, 1)',    // 7: early morning - golden
-  'rgba(255, 220, 160, 1)',    // 8: morning - light golden
+  'rgba(255, 140, 180, 1)',    // 6: sunrise - less saturated pink
+  'rgba(255, 120, 180, 1)',    // 7: early morning - rosy pink
+  'rgba(180, 170, 220, 1)',    // 8: morning - between pink and blue
   'rgba(200, 230, 255, 1)',    // 9: late morning - pale blue
   'rgba(135, 206, 250, 1)',    // 10: mid-morning - sky blue
   'rgba(100, 180, 255, 1)',    // 11: late morning - bright blue
   'rgba(70, 160, 255, 1)',     // 12: noon - deep blue sky
   'rgba(80, 170, 255, 1)',     // 13: early afternoon
   'rgba(90, 180, 250, 1)',     // 14: afternoon
-  'rgba(120, 190, 240, 1)',    // 15: mid-afternoon
-  'rgba(180, 210, 230, 1)',    // 16: late afternoon - soft blue
-  'rgba(255, 180, 120, 1)',    // 17: early evening - golden
-  'rgba(255, 140, 80, 1)',     // 18: sunset begins - orange
-  'rgba(255, 100, 60, 1)',     // 19: sunset - deep orange/red
-  'rgba(200, 80, 100, 0.9)',   // 20: dusk - purple/red
+  'rgba(120, 190, 240, 1)',    // 15: mid-afternoon - cool blue
+  'rgba(160, 210, 250, 1)',    // 16: late afternoon - pale blue
+  'rgba(180, 210, 230, 1)',    // 17: early evening - soft blue
+  'rgba(140, 180, 220, 1)',    // 18: sunset begins - cool blue
+  'rgba(120, 140, 200, 1)',    // 19: sunset - muted blue
+  'rgba(100, 120, 180, 0.9)',  // 20: dusk - cool blue/purple
   'rgba(100, 50, 120, 0.9)',   // 21: twilight - deep purple
   'rgba(50, 30, 80, 0.9)',     // 22: late twilight - dark purple
   'rgba(20, 20, 60, 0.9)',     // 23: night - deep blue
