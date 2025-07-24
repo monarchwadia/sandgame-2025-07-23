@@ -2,6 +2,11 @@ import { getIndex } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
 import { LIGHTNING_COLOR } from '../palette';
+import { WOOD_IDX } from './wood.particle';
+import { TREETOP_IDX } from './treetop.particle';
+import { GRASS_IDX } from './grass.particle';
+import { HUMAN_IDX } from './human.particle';
+import { FIRE_IDX } from './fire.particle';
 
 export const LIGHTNING_IDX = 9;
 
@@ -43,6 +48,26 @@ export const lightningParticle: ParticleType = {
             if (belowRight !== -1) cells.push(belowRight);
             for (const idx of cells) {
                 if (idx >= 0 && grid[idx] !== SKY_IDX && grid[idx] !== LIGHTNING_IDX) {
+                    // CURRENT CELL IS THE STRIKE POINT
+                    // Ignite all adjacent wood, treetop, grass, and human
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            if (dx === 0 && dy === 0) continue;
+                            const nx = x + dx;
+                            const ny = y + dy;
+                            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                                const ni = getIndex(nx, ny, width);
+                                if (
+                                    grid[ni] === WOOD_IDX ||
+                                    grid[ni] === TREETOP_IDX ||
+                                    grid[ni] === GRASS_IDX ||
+                                    grid[ni] === HUMAN_IDX
+                                ) {
+                                    grid[ni] = FIRE_IDX;
+                                }
+                            }
+                        }
+                    }
                     eraseContiguousLightning(grid, width, height, x, y);
                     return;
                 }
