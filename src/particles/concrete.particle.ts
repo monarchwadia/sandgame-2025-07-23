@@ -6,7 +6,7 @@ import { WATER_IDX } from './water.particle';
 import { CONCRETE_COLOR } from '../palette';
 import { HUMAN_IDX } from './human.particle';
 
-const GROWTH_FACTOR = 1;
+const GROWTH_FACTOR = 0.1;
 
 export const CONCRETE_IDX = 7;
 

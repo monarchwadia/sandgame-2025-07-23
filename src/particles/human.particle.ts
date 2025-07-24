@@ -36,10 +36,37 @@ export const humanParticle: ParticleType = {
             for (const [nx, ny] of moveDirs.sort(() => Math.random() - 0.5)) {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     const ni = getIndex(nx, ny, width);
+
+                    // Move if the space is empty or water
                     if (grid[ni] === 0 || grid[ni] === WATER_IDX) {
                         grid[i] = grid[ni] === WATER_IDX ? WATER_IDX : 0;
                         grid[ni] = HUMAN_IDX;
                         break;
+                    }
+
+                    // else, if there is a sky which has concrete anywhere in its neighorhood,
+                    // then human can move to that sky
+                    if (grid[ni] === SKY_IDX) {
+                        let canMove = false;
+                        for (let dx = -1; dx <= 1; dx++) {
+                            for (let dy = -1; dy <= 1; dy++) {
+                                if (dx === 0 && dy === 0) continue;
+                                const nx2 = nx + dx;
+                                const ny2 = ny + dy;
+                                if (nx2 >= 0 && nx2 < width && ny2 >= 0 && ny2 < height) {
+                                    if (grid[getIndex(nx2, ny2, width)] === CONCRETE_IDX) {
+                                        canMove = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (canMove) break;
+                        }
+                        if (canMove) {
+                            grid[i] = 0;
+                            grid[ni] = HUMAN_IDX;
+                            break;
+                        }
                     }
                 }
             }
@@ -67,6 +94,35 @@ export const humanParticle: ParticleType = {
                 const below = getBelow(x, y, width);
                 if (grid[below] !== HUMAN_IDX) {
                     grid[below] = CONCRETE_IDX;
+                }
+            }
+
+            // If the element above is concrete, destroy it
+            if (y > 0) {
+                const above = getIndex(x, y - 1, width);
+                if (grid[above] === CONCRETE_IDX) {
+                    // but only if the human is trapped (no sky or water anywhere next to it)
+                    let trapped = true;
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            if (dx === 0 && dy === 0) continue;
+                            const nx = x + dx;
+                            const ny = y + dy;
+                            if (nx >= 0 && nx < width && ny >= 0 && ny <   height) {
+                                const neighborIdx = getIndex(nx, ny, width);
+                                if (grid[neighborIdx] === SKY_IDX || grid[neighborIdx] === WATER_IDX) {
+                                    trapped = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!trapped) break;
+                    }
+                    if (trapped) {
+                        // Destroy concrete above   
+                        grid[above] = SKY_IDX; // Turn concrete above into sky
+                    }
+                
                 }
             }
         }
