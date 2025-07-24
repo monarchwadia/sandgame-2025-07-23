@@ -12,7 +12,9 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
     for (let x = 0; x < width; x++) {
       const color = particlesRegistry[grid[y * width + x]].color;
       ctx.fillStyle = typeof color === 'function' ? color(gameState) : color;
+      ctx.strokeStyle = ctx.fillStyle; // Use fill color for stroke
       ctx.fillRect(x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+      ctx.strokeRect(x * CELL_WIDTH, y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT); // Draw stroke around each cell
     }
   }
 }
