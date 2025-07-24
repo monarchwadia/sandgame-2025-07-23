@@ -5,45 +5,53 @@ import { LIGHTNING_COLOR } from '../palette';
 
 export const LIGHTNING_IDX = 9;
 
-// Each lightning segment stores a unique trailId in a parallel array (not in grid)
-// We'll use a static map to track trail segments for each trailId
-const trailMap: Record<number, number[]> = {};
-let nextTrailId = 1;
-
 export const lightningParticle: ParticleType = {
     name: 'lightning',
     color: LIGHTNING_COLOR,
     behavior: function(grid, width, height, x, y, _gameState) {
-        const i = getIndex(x, y, width);
-        // If this is the top segment, assign a new trailId
-        if (!('lightningTrailId' in window)) {
-            (window as any).lightningTrailId = new Uint32Array(grid.length);
-        }
-        const trailArr = (window as any).lightningTrailId as Uint32Array;
-        let trailId = trailArr[i];
-        if (!trailId) {
-            trailId = nextTrailId++;
-            trailArr[i] = trailId;
-            trailMap[trailId] = [i];
-        }
-        // If not at bottom, move down in a random left/center/right pattern
+        // If any of bottom, bottom-left, or bottom-right is non-sky and non-lightning, erase all lightning
         if (y < height - 1) {
-            const options = [x];
-            if (x > 0) options.push(x - 1);
-            if (x < width - 1) options.push(x + 1);
-            const nx = options[Math.floor(Math.random() * options.length)];
-            const ni = getIndex(nx, y + 1, width);
-            if (grid[ni] === SKY_IDX) {
-                grid[ni] = LIGHTNING_IDX;
-                trailArr[ni] = trailId;
-                trailMap[trailId].push(ni);
-            } else {
-                // Hit ground: erase the whole trail
-                for (const idx of trailMap[trailId]) {
-                    grid[idx] = SKY_IDX;
-                    trailArr[idx] = 0;
+            const below = getIndex(x, y + 1, width);
+            const belowLeft = x > 0 ? getIndex(x - 1, y + 1, width) : -1;
+            const belowRight = x < width - 1 ? getIndex(x + 1, y + 1, width) : -1;
+            const cells = [below];
+            if (belowLeft !== -1) cells.push(belowLeft);
+            if (belowRight !== -1) cells.push(belowRight);
+            for (const idx of cells) {
+                if (idx >= 0 && grid[idx] !== SKY_IDX && grid[idx] !== LIGHTNING_IDX) {
+                    for (let i = 0; i < grid.length; i++) {
+                        if (grid[i] === LIGHTNING_IDX) {
+                            grid[i] = SKY_IDX;
+                        }
+                    }
+                    return;
                 }
-                delete trailMap[trailId];
+            }
+        }
+
+        // Only allow the head to spawn: no lightning in bottom, bottomleft, bottomright
+        let isHead = true;
+        if (y < height - 1) {
+            if (grid[getIndex(x, y + 1, width)] === LIGHTNING_IDX) isHead = false;
+            if (x > 0 && grid[getIndex(x - 1, y + 1, width)] === LIGHTNING_IDX) isHead = false;
+            if (x < width - 1 && grid[getIndex(x + 1, y + 1, width)] === LIGHTNING_IDX) isHead = false;
+        } else {
+            isHead = false;
+        }
+        if (!isHead) return;
+
+        // Spawn lightning below (biased towards sides)
+        if (y < height - 1) {
+            const options = [];
+            if (grid[getIndex(x, y + 1, width)] === SKY_IDX) options.push([x, y + 1]);
+            if (x > 0 && grid[getIndex(x - 1, y + 1, width)] === SKY_IDX) options.push([x - 1, y + 1]);
+            if (x < width - 1 && grid[getIndex(x + 1, y + 1, width)] === SKY_IDX) options.push([x + 1, y + 1]);
+            if (options.length > 0) {
+                // Pick random with bias towards sides
+                const choice = Math.random() < 0.7 && options.length > 1 ? 
+                    options[Math.floor(Math.random() * (options.length - 1)) + 1] : 
+                    options[0];
+                grid[getIndex(choice[0], choice[1], width)] = LIGHTNING_IDX;
             }
         }
     }
