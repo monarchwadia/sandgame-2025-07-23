@@ -9,6 +9,7 @@ import { FIRE_IDX } from './fire.particle';
 import { OIL_IDX } from './oil.particle';
 
 export const PIPE_IDX = 10;
+const CONTAINER_RADIUS = 7;
 
 export const pipeParticle: ParticleType = {
     name: 'pipe',
@@ -59,15 +60,16 @@ export const pipeParticle: ParticleType = {
             
             if (aboveParticle === SKY_IDX) {
                 // Spout water slowly
-                if (Math.random() < 0.01) {
-                    grid[aboveIdx] = OIL_IDX; // Spout water
+                if (Math.random() < 0.0001) {
+                    grid[aboveIdx] = OIL_IDX; // Spout oil
+                }
 
-                    // Build a concrete container around the spout in a radius
-                    const radius = 7;
-                    for (let dx = -radius; dx <= radius; dx++) {
-                        for (let dy = -radius; dy <= radius; dy++) {
+                // Build a concrete container around the head in a radius
+                if (Math.random() < 0.0005) {
+                    for (let dx = -CONTAINER_RADIUS; dx <= CONTAINER_RADIUS; dx++) {
+                        for (let dy = -CONTAINER_RADIUS; dy <= CONTAINER_RADIUS; dy++) {
                             // Only build on the edge of the radius (circle)
-                            if (Math.abs(dx) + Math.abs(dy) !== radius) continue;
+                            if (Math.abs(dx) + Math.abs(dy) !== CONTAINER_RADIUS) continue;
                             const cx = x + dx;
                             const cy = (headY - 1) + dy;
                             if (cx >= 0 && cx < width && cy >= 0 && cy < height) {
@@ -85,6 +87,21 @@ export const pipeParticle: ParticleType = {
             } else if (aboveParticle !== PIPE_IDX && aboveParticle !== WATER_IDX && aboveParticle !== FIRE_IDX && aboveParticle !== OIL_IDX) {
                 grid[aboveIdx] = PIPE_IDX; // Break through concrete/other
             }
+
+
+            // The top of any container, if it exists, should be almost like a chimney.
+            // If it is open to the sky, it should spout water.
+           let chimneyY = headY - CONTAINER_RADIUS - 2;
+           let chimneyIsInBound = chimneyY >= 0 && chimneyY < height;
+           if (chimneyIsInBound) {
+                const chimneyZoneInhabitant = grid[getIndex(x, chimneyY, width)];
+                if ((chimneyZoneInhabitant === CONCRETE_IDX || chimneyZoneInhabitant === FIRE_IDX || chimneyZoneInhabitant === SKY_IDX)) {
+                    // Spout water slowly
+                    if (Math.random() < 0.005) {
+                        grid[getIndex(x, chimneyY, width)] = FIRE_IDX; // Spout fire
+                    }
+                }
+           }
         }
     }
 };
