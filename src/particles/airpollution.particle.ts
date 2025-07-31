@@ -17,9 +17,6 @@ export const airpollutionParticle: ParticleType = {
       return;
     }
 
-    // Oscillate between top of screen and 15% height
-    const topThreshold = Math.floor(height * 0.15);
-
     // In top 15% - Brownian motion (random walk in all directions)
     if (getRandom() < 0.3) {
       const directions = [
@@ -52,7 +49,6 @@ export const airpollutionParticle: ParticleType = {
         // 25% chance of down movement
         // 50-50 chance of left/right movement
         let yMovement = movementThreshold < 0.75 ? -1 : 1;
-        let xMovement = movementThreshold < 0.5 ? -1 : 1;
 
         const newY = Math.max(0, y + yMovement);
         const newIdx = x + newY * width;
