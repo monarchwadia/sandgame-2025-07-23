@@ -12,6 +12,7 @@ import { LIGHTNING_IDX, lightningParticle } from './lightning.particle';
 import { PIPE_IDX, pipeParticle } from './pipe.particle';
 import { OIL_IDX, oilParticle } from './oil.particle';
 import { AIRPOLLUTION_IDX, airpollutionParticle } from './airpollution.particle';
+import { ACID_IDX, acidParticle } from './acid.particle';
 
 export const particlesRegistry: { [key: number]: ParticleType } = {
     [SKY_IDX]: skyParticle,
@@ -27,4 +28,5 @@ export const particlesRegistry: { [key: number]: ParticleType } = {
     [PIPE_IDX]: pipeParticle,
     [OIL_IDX]: oilParticle,
     [AIRPOLLUTION_IDX]: airpollutionParticle,
+    [ACID_IDX]: acidParticle,
 };

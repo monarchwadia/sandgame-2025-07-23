@@ -5,9 +5,9 @@ import { SAND_IDX } from './sand.particle';
 import { GRASS_IDX } from './grass.particle';
 import { SKY_IDX } from './sky.particle';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
-import { OIL_IDX } from './oil.particle';
 import type { GameState } from '../GameState';
 import { HOUR_INDEXES } from '../constants';
+import { ACID_IDX } from './acid.particle';
 
 export const WATER_IDX = 2;
 
@@ -49,7 +49,7 @@ export const waterParticle: ParticleType = {
             } else if (grid[below] === AIRPOLLUTION_IDX) {
                 // Water turns into oil when it touches air pollution
                 grid[i] = SKY_IDX;
-                grid[below] = OIL_IDX;
+                grid[below] = ACID_IDX;
                 return;
             }
         }
@@ -62,12 +62,12 @@ export const waterParticle: ParticleType = {
         // Check if water would contact air pollution when moving left/right
         if (x > 0 && grid[left] === AIRPOLLUTION_IDX) {
             grid[i] = SKY_IDX;
-            grid[left] = OIL_IDX;
+            grid[left] = ACID_IDX;
             return;
         }
         if (x < width - 1 && grid[right] === AIRPOLLUTION_IDX) {
             grid[i] = SKY_IDX;
-            grid[right] = OIL_IDX;
+            grid[right] = ACID_IDX;
             return;
         }
         
