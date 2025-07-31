@@ -38,25 +38,24 @@ export function initialize(target: HTMLElement, gameState: GameState) {
     return;
   }
 
-  function renderLoop() {
-    renderBoard(canvas, ctx, gameState);
-    requestAnimationFrame(renderLoop);
-  }
-  renderLoop();
-
   let lastUpdate = performance.now();
-  function updateLoop() {
+  let accumulator = 0;
+  const targetDelta = 1000 / FPS;
+
+  function mainLoop() {
     const now = performance.now();
-    const targetDelta = 1000 / FPS;
-    let elapsed = now - lastUpdate;
-    let updatesNeeded = Math.floor(elapsed / targetDelta);
-    if (updatesNeeded < 1) updatesNeeded = 1; // Always update at least once
-    for (let i = 0; i < updatesNeeded; i++) {
+    accumulator += now - lastUpdate;
+    lastUpdate = now;
+
+    // Run fixed-timestep simulation steps to catch up
+    while (accumulator >= targetDelta) {
       updateGameState(gameState);
       maybeSpawnHumans(gameState);
+      accumulator -= targetDelta;
     }
-    lastUpdate = now;
-    setTimeout(updateLoop, targetDelta);
+
+    renderBoard(canvas, ctx, gameState);
+    requestAnimationFrame(mainLoop);
   }
-  updateLoop();
+  requestAnimationFrame(mainLoop);
 }
