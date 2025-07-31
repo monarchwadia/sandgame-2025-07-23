@@ -1,3 +1,4 @@
+export const AIRPOLLUTION_COLOR = 'rgba(120, 200, 80, 0.7)'; // sickly green
 // Realistic and saturated color palette for the sandgame project
 // All colors are defined as RGBA strings with natural but vibrant aesthetics
 
