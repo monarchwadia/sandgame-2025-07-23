@@ -6,6 +6,7 @@ import { WATER_IDX } from './water.particle';
 import { PIPE_COLOR } from '../palette';
 import { CONCRETE_IDX } from './concrete.particle';
 import { FIRE_IDX } from './fire.particle';
+import { OIL_IDX } from './oil.particle';
 
 export const PIPE_IDX = 10;
 
@@ -59,7 +60,7 @@ export const pipeParticle: ParticleType = {
             if (aboveParticle === SKY_IDX) {
                 // Spout water slowly
                 if (Math.random() < 0.01) {
-                    grid[aboveIdx] = WATER_IDX; // Spout water
+                    grid[aboveIdx] = OIL_IDX; // Spout water
 
                     // Build a concrete container around the spout in a radius
                     const radius = 7;
@@ -71,14 +72,17 @@ export const pipeParticle: ParticleType = {
                             const cy = (headY - 1) + dy;
                             if (cx >= 0 && cx < width && cy >= 0 && cy < height) {
                                 const cIdx = getIndex(cx, cy, width);
-                                if (grid[cIdx] === SKY_IDX && Math.random() < 0.05) {
-                                    grid[cIdx] = CONCRETE_IDX;
+                                if (grid [cIdx] !== CONCRETE_IDX) {
+                                    // Slowly build concrete around the spout
+                                    if (Math.random() < 0.05) {
+                                        grid[cIdx] = CONCRETE_IDX;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            } else if (aboveParticle !== PIPE_IDX && aboveParticle !== WATER_IDX && aboveParticle !== FIRE_IDX) {
+            } else if (aboveParticle !== PIPE_IDX && aboveParticle !== WATER_IDX && aboveParticle !== FIRE_IDX && aboveParticle !== OIL_IDX) {
                 grid[aboveIdx] = PIPE_IDX; // Break through concrete/other
             }
         }

@@ -10,6 +10,7 @@ import { CONCRETE_IDX, concreteParticle } from './concrete.particle';
 import { FIRE_IDX, fireParticle } from './fire.particle';
 import { LIGHTNING_IDX, lightningParticle } from './lightning.particle';
 import { PIPE_IDX, pipeParticle } from './pipe.particle';
+import { OIL_IDX, oilParticle } from './oil.particle';
 
 export const particlesRegistry: { [key: number]: ParticleType } = {
     [SKY_IDX]: skyParticle,
@@ -22,5 +23,6 @@ export const particlesRegistry: { [key: number]: ParticleType } = {
     [CONCRETE_IDX]: concreteParticle,
     [FIRE_IDX]: fireParticle, // Assuming fireParticle is defined elsewhere
     [LIGHTNING_IDX]: lightningParticle, // Assuming lightningParticle is defined elsewhere
-    [PIPE_IDX]: pipeParticle
+    [PIPE_IDX]: pipeParticle,
+    [OIL_IDX]: oilParticle
 };
