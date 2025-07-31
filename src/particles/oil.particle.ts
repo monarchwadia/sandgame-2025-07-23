@@ -5,6 +5,7 @@ import { WATER_IDX } from './water.particle';
 import { FIRE_IDX } from './fire.particle';
 import { OIL_COLOR } from '../palette';
 import type { GameState } from '../GameState';
+import { AIRPOLLUTION_IDX } from './airpollution.particle';
 
 export const OIL_IDX = 11;
 
@@ -39,7 +40,7 @@ export const oilParticle: ParticleType = {
                 return;
             }
             // Otherwise, fall down like normal liquid if space is available
-            if (grid[below] === SKY_IDX) {
+            if (grid[below] === SKY_IDX || grid[below] === AIRPOLLUTION_IDX) {
                 grid[i] = SKY_IDX;
                 grid[below] = OIL_IDX;
                 return;

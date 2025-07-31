@@ -7,6 +7,7 @@ import { TREETOP_IDX } from './treetop.particle';
 import { GRASS_IDX } from './grass.particle';
 import { HUMAN_IDX } from './human.particle';
 import { FIRE_IDX } from './fire.particle';
+import { AIRPOLLUTION_IDX } from './airpollution.particle';
 
 export const LIGHTNING_IDX = 9;
 
@@ -47,7 +48,7 @@ export const lightningParticle: ParticleType = {
             if (belowLeft !== -1) cells.push(belowLeft);
             if (belowRight !== -1) cells.push(belowRight);
             for (const idx of cells) {
-                if (idx >= 0 && grid[idx] !== SKY_IDX && grid[idx] !== LIGHTNING_IDX) {
+                if (idx >= 0 && grid[idx] !== SKY_IDX && grid[idx] !== LIGHTNING_IDX && grid[idx] !== AIRPOLLUTION_IDX) {
                     // CURRENT CELL IS THE STRIKE POINT
                     // Ignite a larger fireball area (5x5) around the strike point
                     const fireballRadius = 2; // 2 = 5x5 area
