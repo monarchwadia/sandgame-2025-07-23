@@ -43,10 +43,19 @@ export function initialize(target: HTMLElement, gameState: GameState) {
   }
   renderLoop();
 
+  let lastUpdate = performance.now();
   function updateLoop() {
-    updateGameState(gameState);
-    maybeSpawnHumans(gameState);
-    setTimeout(updateLoop, 1000 / FPS);
+    const now = performance.now();
+    const targetDelta = 1000 / FPS;
+    let elapsed = now - lastUpdate;
+    let updatesNeeded = Math.floor(elapsed / targetDelta);
+    if (updatesNeeded < 1) updatesNeeded = 1; // Always update at least once
+    for (let i = 0; i < updatesNeeded; i++) {
+      updateGameState(gameState);
+      maybeSpawnHumans(gameState);
+    }
+    lastUpdate = now;
+    setTimeout(updateLoop, targetDelta);
   }
   updateLoop();
 }

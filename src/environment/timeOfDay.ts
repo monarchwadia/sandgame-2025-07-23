@@ -1,22 +1,17 @@
 // src/environment/timeOfDay.ts
 // Handles time of day progression for the sand game
-
-import { DAYNIGHT_SPEED_HPS, FPS } from '../constants';
 import type { GameState } from '../GameState';
 
-let fps = FPS;
-let daynightSpeedHps = DAYNIGHT_SPEED_HPS;
-let secondsPerHour = 1 / daynightSpeedHps / 2;
-let framesToNextHour = Math.floor(fps * secondsPerHour);
-let countdown = framesToNextHour;
+let ticksToNextHour = 100;
+let countdown = ticksToNextHour;
 
 export function timeOfDayProcessor(gameState: GameState) {
   countdown--;
   if (countdown <= 0) {
     gameState.timeOfDay = (gameState.timeOfDay + 1) % 24;
-    countdown = framesToNextHour;
+    countdown = ticksToNextHour;
   }
   
   // Add smooth time progress (0.0 to 1.0 within the current hour)
-  gameState.timeProgressPct = 1 - (countdown / framesToNextHour);
+  gameState.timeProgressPct = 1 - (countdown / ticksToNextHour);
 }

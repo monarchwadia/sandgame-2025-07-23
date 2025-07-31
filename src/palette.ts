@@ -11,6 +11,7 @@ export const CONCRETE_COLOR = 'rgba(128, 128, 128, 1)'; // gray concrete
 export const HUMAN_COLOR = 'rgba(180, 60, 220, 1)'; // vibrant purple for human
 export const FIRE_COLOR = 'rgba(255, 52, 21, 1)'; // bright orange-red for fire
 export const LIGHTNING_COLOR = 'rgba(255, 255, 120, 1)'; // bright yellow for lightning
+export const PIPE_COLOR = 'rgba(68, 67, 67, 1)'; // neutral gray for pipe
 
 // Sky colors for each hour (0-23) - realistic day/night cycle with rich saturation
 export const SKY_COLORS = [
