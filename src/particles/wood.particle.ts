@@ -5,6 +5,7 @@ import { TREETOP_IDX } from './treetop.particle';
 import { SKY_IDX } from './sky.particle';
 import { HOUR_INDEXES } from '../constants';
 import type { GameState } from '../GameState';
+import { getRandom } from '../randomseed';
 
 export const WOOD_IDX = 4;
 
@@ -47,7 +48,7 @@ export const woodParticle: ParticleType = {
                     const above = getIndex(x, y - 1, width);
                     if (grid[above] === SKY_IDX) {
                         // 50% chance to grow treetop, 25% chance to grow wood
-                        const randomInt = Math.random();
+                        const randomInt = getRandom();
                         if (randomInt < 0.3) {
                             grid[above] = WOOD_IDX;
                         } else if (randomInt < 0.9) {
@@ -57,7 +58,7 @@ export const woodParticle: ParticleType = {
                 } else {
                     // random chance that the tree grows a wood
                     const above = getIndex(x, y - 1, width);
-                    if (grid[above] === SKY_IDX && Math.random() < 0.03) { // 10% chance
+                    if (grid[above] === SKY_IDX && getRandom() < 0.03) { // 10% chance
                         grid[above] = WOOD_IDX;
                     }
                 }

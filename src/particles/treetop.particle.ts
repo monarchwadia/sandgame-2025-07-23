@@ -5,6 +5,7 @@ import { WOOD_IDX } from './wood.particle';
 import { SKY_IDX } from './sky.particle';
 import { HOUR_INDEXES } from '../constants';
 import type { GameState } from '../GameState';
+import { getRandom } from '../randomseed';
 
 export const TREETOP_IDX = 5;
 
@@ -44,7 +45,7 @@ export const treetopParticle: ParticleType = {
         // If not in photosynthesis hours, and not touching wood or treetop, chance to disappear
         if (currentHour < startHour || currentHour > endHour) {
             if (woodNeighbours === 0) {
-                if (Math.random() < 0.003) {
+                if (getRandom() < 0.003) {
                     grid[getIndex(x, y, width)] = SKY_IDX;
                 }
             }
@@ -56,8 +57,8 @@ export const treetopParticle: ParticleType = {
         // - Has sky to grow into
         if (totalWoodAndTreetopNeighbors >= 1 && treetopNeighbors <= 1 && growthCandidates.length > 0) {
             // chance to grow each frame (adjust as needed)
-            if (Math.random() < 0.01) {
-                const randomSpot = growthCandidates[Math.floor(Math.random() * growthCandidates.length)];
+            if (getRandom() < 0.01) {
+                const randomSpot = growthCandidates[Math.floor(getRandom() * growthCandidates.length)];
                 grid[randomSpot] = TREETOP_IDX; // 5 = treetop
             }
         }

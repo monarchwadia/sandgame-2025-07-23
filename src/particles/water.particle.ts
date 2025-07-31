@@ -8,6 +8,7 @@ import { AIRPOLLUTION_IDX } from './airpollution.particle';
 import type { GameState } from '../GameState';
 import { HOUR_INDEXES } from '../constants';
 import { ACID_IDX } from './acid.particle';
+import { getRandom } from '../randomseed';
 
 export const WATER_IDX = 2;
 
@@ -19,7 +20,7 @@ export const waterParticle: ParticleType = {
         const currentHour = gameState.timeOfDay;
         const [startHeat, endHeat] = HOUR_INDEXES.highHeat;
         if (currentHour >= startHeat && currentHour <= endHeat) {
-            if (Math.random() < 0.001) { // 1% chance per frame
+            if (getRandom() < 0.001) { // 1% chance per frame
                 grid[getIndex(x, y, width)] = SKY_IDX;
                 return;
             }
@@ -35,7 +36,7 @@ export const waterParticle: ParticleType = {
         ];
         for (const idx of adjacents) {
             if (idx >= 0 && idx < grid.length && grid[idx] === SAND_IDX) {
-                if (Math.random() < 0.01) {
+                if (getRandom() < 0.01) {
                     grid[idx] = GRASS_IDX;
                 }
             }
@@ -72,7 +73,7 @@ export const waterParticle: ParticleType = {
         }
         
         if (canLeft && canRight) {
-            if (Math.random() < 0.5) {
+            if (getRandom() < 0.5) {
                 grid[i] = SKY_IDX;
                 grid[left] = WATER_IDX;
             } else {

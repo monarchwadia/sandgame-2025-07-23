@@ -4,6 +4,7 @@ import { SAND_COLOR } from '../palette';
 import { SKY_IDX } from './sky.particle';
 import { WATER_IDX } from './water.particle';
 import type { GameState } from '../GameState';
+import { getRandom } from '../randomseed';
 
 export const SAND_IDX = 1;
 
@@ -26,7 +27,7 @@ export const sandParticle: ParticleType = {
             const canLeft = x > 0 && grid[left] === SKY_IDX;
             const canRight = x < width - 1 && grid[right] === SKY_IDX;
             if (canLeft && canRight) {
-                if (Math.random() < 0.5) {
+                if (getRandom() < 0.5) {
                     grid[i] = SKY_IDX;
                     grid[left] = SAND_IDX;
                 } else {

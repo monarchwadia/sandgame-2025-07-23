@@ -5,6 +5,7 @@ import { SKY_IDX } from './sky.particle';
 import { CONCRETE_COLOR } from '../palette';
 import { HUMAN_IDX } from './human.particle';
 import { PIPE_IDX } from './pipe.particle';
+import { getRandom } from '../randomseed';
 
 const GROWTH_FACTOR = 0.1;
 
@@ -86,7 +87,7 @@ export const concreteParticle: ParticleType = {
         const slopeDistance = 1;
         
         // Grow left or right if possible (slowly) and there's adequate support
-        if (Math.random() < GROWTH_FACTOR) {
+        if (getRandom() < GROWTH_FACTOR) {
             // Try to grow left
             if (x > 0 && grid[getIndex(x - 1, y, width)] === SKY_IDX) {
                 if (hasSupport(x - 1, y, slopeDistance)) {
@@ -111,7 +112,7 @@ export const concreteParticle: ParticleType = {
                 grid[getIndex(x, y + 1, width)] === CONCRETE_IDX &&
                 (x === width - 1 || grid[getIndex(x + 1, y + 1, width)] === CONCRETE_IDX);
             
-            if (hasFoundation && Math.random() < GROWTH_FACTOR) {
+            if (hasFoundation && getRandom() < GROWTH_FACTOR) {
                 grid[getIndex(x, y - 1, width)] = CONCRETE_IDX;
             }
         }

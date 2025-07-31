@@ -6,6 +6,7 @@ import { FIRE_IDX } from './fire.particle';
 import { OIL_COLOR } from '../palette';
 import type { GameState } from '../GameState';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
+import { getRandom } from '../randomseed';
 
 export const OIL_IDX = 11;
 
@@ -23,7 +24,7 @@ export const oilParticle: ParticleType = {
                 const ny = y + dy;
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     const ni = getIndex(nx, ny, width);
-                    if (grid[ni] === FIRE_IDX && Math.random() < 0.3) {
+                    if (grid[ni] === FIRE_IDX && getRandom() < 0.3) {
                         grid[i] = FIRE_IDX; // Oil catches fire
                         return;
                     }
@@ -48,11 +49,11 @@ export const oilParticle: ParticleType = {
         }
 
         // Spread horizontally like liquid
-        if (Math.random() < 0.5) {
+        if (getRandom() < 0.5) {
             const directions = [
                 [x - 1, y], [x + 1, y]
             ];
-            for (const [nx, ny] of directions.sort(() => Math.random() - 0.5)) {
+            for (const [nx, ny] of directions.sort(() => getRandom() - 0.5)) {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     const ni = getIndex(nx, ny, width);
                     if (grid[ni] === SKY_IDX) {

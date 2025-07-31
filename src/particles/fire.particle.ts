@@ -5,6 +5,7 @@ import { WOOD_IDX } from './wood.particle';
 import { TREETOP_IDX } from './treetop.particle';
 import { GRASS_IDX } from './grass.particle';
 import { FIRE_COLOR } from '../palette';
+import { getRandom } from '../randomseed';
 
 export const FIRE_IDX = 8;
 
@@ -20,13 +21,13 @@ export const fireParticle: ParticleType = {
             [-1, -1], [1, -1], [-1, 1], [1, 1]
         ];
         // Shuffle directions for randomness
-        for (const [dx, dy] of directions.sort(() => Math.random() - 0.5)) {
+        for (const [dx, dy] of directions.sort(() => getRandom() - 0.5)) {
             const nx = x + dx;
             const ny = y + dy;
             if (nx >= 0 && nx < width && ny >= 0 && ny < grid.length / width) {
                 const ni = getIndex(nx, ny, width);
                 // If adjacent cell is sky, move fire there
-                if (grid[ni] === SKY_IDX && Math.random() < 0.02) {
+                if (grid[ni] === SKY_IDX && getRandom() < 0.02) {
                     grid[ni] = FIRE_IDX;
                     grid[i] = SKY_IDX;
                     return;
@@ -35,7 +36,7 @@ export const fireParticle: ParticleType = {
         }
 
         // Fire burns out with a small chance
-        if (Math.random() < 0.05) {
+        if (getRandom() < 0.05) {
             grid[i] = SKY_IDX;
             return;
         }
@@ -53,7 +54,7 @@ export const fireParticle: ParticleType = {
                     grid[idx] === TREETOP_IDX ||
                     grid[idx] === GRASS_IDX
                 ) {
-                    if (Math.random() < 0.3) {
+                    if (getRandom() < 0.3) {
                         grid[idx] = FIRE_IDX;
                     }
                 }

@@ -8,6 +8,7 @@ import { GRASS_IDX } from './grass.particle';
 import { HUMAN_IDX } from './human.particle';
 import { FIRE_IDX } from './fire.particle';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
+import { getRandom } from '../randomseed';
 
 export const LIGHTNING_IDX = 9;
 
@@ -96,8 +97,8 @@ export const lightningParticle: ParticleType = {
             if (x < width - 1 && grid[getIndex(x + 1, y + 1, width)] === SKY_IDX) options.push([x + 1, y + 1]);
             if (options.length > 0) {
                 // Pick random with bias towards sides
-                const choice = Math.random() < 0.7 && options.length > 1 ? 
-                    options[Math.floor(Math.random() * (options.length - 1)) + 1] : 
+                const choice = getRandom() < 0.7 && options.length > 1 ? 
+                    options[Math.floor(getRandom() * (options.length - 1)) + 1] : 
                     options[0];
                 grid[getIndex(choice[0], choice[1], width)] = LIGHTNING_IDX;
             }

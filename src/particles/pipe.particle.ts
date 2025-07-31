@@ -8,6 +8,7 @@ import { CONCRETE_IDX } from './concrete.particle';
 import { FIRE_IDX } from './fire.particle';
 import { OIL_IDX } from './oil.particle';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
+import { getRandom } from '../randomseed';
 
 export const PIPE_IDX = 10;
 const CONTAINER_RADIUS = 7;
@@ -61,12 +62,12 @@ export const pipeParticle: ParticleType = {
             
             if (aboveParticle === SKY_IDX) {
                 // Spout water slowly
-                if (Math.random() < 0.0001) {
+                if (getRandom() < 0.0001) {
                     grid[aboveIdx] = OIL_IDX; // Spout oil
                 }
 
                 // Build a concrete container around the head in a radius
-                if (Math.random() < 0.0005) {
+                if (getRandom() < 0.0005) {
                     for (let dx = -CONTAINER_RADIUS; dx <= CONTAINER_RADIUS; dx++) {
                         for (let dy = -CONTAINER_RADIUS; dy <= CONTAINER_RADIUS; dy++) {
                             // Only build on the edge of the radius (circle)
@@ -77,7 +78,7 @@ export const pipeParticle: ParticleType = {
                                 const cIdx = getIndex(cx, cy, width);
                                 if (grid [cIdx] !== CONCRETE_IDX) {
                                     // Slowly build concrete around the spout
-                                    if (Math.random() < 0.05) {
+                                    if (getRandom() < 0.05) {
                                         grid[cIdx] = CONCRETE_IDX;
                                     }
                                 }
@@ -98,7 +99,7 @@ export const pipeParticle: ParticleType = {
                 const chimneyZoneInhabitant = grid[getIndex(x, chimneyY, width)];
                 if ((chimneyZoneInhabitant === CONCRETE_IDX || chimneyZoneInhabitant === FIRE_IDX || chimneyZoneInhabitant === SKY_IDX)) {
                     // Spout water slowly
-                    if (Math.random() < 0.00001) {
+                    if (getRandom() < 0.00001) {
                         grid[getIndex(x, chimneyY, width)] = AIRPOLLUTION_IDX; // Spout fire
                     }
                 }

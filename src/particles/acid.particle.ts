@@ -7,6 +7,7 @@ import { SAND_IDX } from './sand.particle';
 import { GRASS_IDX } from './grass.particle';
 import { WOOD_IDX } from './wood.particle';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
+import { getRandom } from '../randomseed';
 
 export const ACID_IDX = 14;
 
@@ -17,7 +18,7 @@ export const acidParticle: ParticleType = {
         const i = getIndex(x, y, width);
 
         // chance to disappear
-        if (Math.random() < 0.001) { // 0.1%
+        if (getRandom() < 0.001) { // 0.1%
             grid[i] = SKY_IDX; // Remove acid particle
             return;
         }
@@ -38,7 +39,7 @@ export const acidParticle: ParticleType = {
                 // Acid corrodes concrete, sand, grass, and wood
                 if (particle === CONCRETE_IDX || particle === SAND_IDX || 
                     particle === GRASS_IDX || particle === WOOD_IDX) {
-                    if (Math.random() < 0.00001) { // 5% chance to corrode
+                    if (getRandom() < 0.00001) { // 5% chance to corrode
                         grid[idx] = SKY_IDX;
                     }
                 }
@@ -62,7 +63,7 @@ export const acidParticle: ParticleType = {
         const canRight = x < width - 1 && grid[right] === SKY_IDX;
         
         if (canLeft && canRight) {
-            if (Math.random() < 0.5) {
+            if (getRandom() < 0.5) {
                 grid[i] = SKY_IDX;
                 grid[left] = ACID_IDX;
             } else {

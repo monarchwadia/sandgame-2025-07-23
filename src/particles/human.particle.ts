@@ -8,6 +8,7 @@ import { WATER_IDX } from './water.particle';
 import { CONCRETE_IDX } from './concrete.particle';
 import type { GameState } from '../GameState';
 import { HUMAN_COLOR } from '../palette';
+import { getRandom } from '../randomseed';
 
 export const HUMAN_IDX = 6;
 
@@ -26,14 +27,14 @@ export const humanParticle: ParticleType = {
             }
         }
         // Random movement: swim or move left/right
-        if (Math.random() < 0.5) {
+        if (getRandom() < 0.5) {
             // All possible directions (including diagonals)
             const moveDirs = [
                 [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1],
                 [x - 1, y - 1], [x + 1, y - 1], [x - 1, y + 1], [x + 1, y + 1]
             ];
             // Shuffle directions for randomness
-            for (const [nx, ny] of moveDirs.sort(() => Math.random() - 0.5)) {
+            for (const [nx, ny] of moveDirs.sort(() => getRandom() - 0.5)) {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     const ni = getIndex(nx, ny, width);
 

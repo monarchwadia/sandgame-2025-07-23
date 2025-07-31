@@ -9,6 +9,7 @@ import { WATER_IDX } from './particles/water.particle';
 import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
 import { maybeSpawnHumans } from './environment/maybeSpawnHumansProcess';
+import { getRandom } from './randomseed';
 
 export function initialize(target: HTMLElement, gameState: GameState) {
   // Canvas setup
@@ -21,7 +22,7 @@ export function initialize(target: HTMLElement, gameState: GameState) {
 
   for (let i = 0; i < gameState.grid.length; i++) {
     // initialize with random sand
-    const randomint = Math.random();
+    const randomint = getRandom();
     gameState.grid[i] = randomint < 0.2 ? SAND_IDX : SKY_IDX;
 
     // for top row, add ranodm water
