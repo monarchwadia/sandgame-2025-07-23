@@ -6,7 +6,6 @@ import { CONCRETE_IDX } from './concrete.particle';
 import { SAND_IDX } from './sand.particle';
 import { GRASS_IDX } from './grass.particle';
 import { WOOD_IDX } from './wood.particle';
-import { AIRPOLLUTION_IDX } from './airpollution.particle';
 import { getRandom } from '../randomseed';
 
 export const ACID_IDX = 14;

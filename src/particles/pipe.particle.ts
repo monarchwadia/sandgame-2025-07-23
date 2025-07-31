@@ -3,7 +3,7 @@ import { getIndex } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
 import { WATER_IDX } from './water.particle';
-import { AIRPOLLUTION_COLOR, PIPE_COLOR } from '../palette';
+import { PIPE_COLOR } from '../palette';
 import { CONCRETE_IDX } from './concrete.particle';
 import { FIRE_IDX } from './fire.particle';
 import { OIL_IDX } from './oil.particle';
