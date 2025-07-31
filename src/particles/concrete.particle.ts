@@ -4,6 +4,7 @@ import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
 import { CONCRETE_COLOR } from '../palette';
 import { HUMAN_IDX } from './human.particle';
+import { PIPE_IDX } from './pipe.particle';
 
 const GROWTH_FACTOR = 0.1;
 
@@ -13,6 +14,42 @@ export const concreteParticle: ParticleType = {
     name: 'concrete',
     color: CONCRETE_COLOR, // gray concrete
     behavior: function(grid: Uint32Array, width: number, height: number, x: number, y: number, _gameState: GameState) {
+// Check if surrounded by concrete and no pipe within 3 cells
+        let surrounded = true;
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                if (dx === 0 && dy === 0) continue;
+                const nx = x + dx;
+                const ny = y + dy;
+                if (nx < 0 || nx >= width || ny < 0 || ny >= height || grid[getIndex(nx, ny, width)] !== CONCRETE_IDX) {
+                    surrounded = false;
+                    break;
+                }
+            }
+            if (!surrounded) break;
+        }
+        // Check for pipe within 3 cells
+        let pipeNearby = false;
+        for (let dx = -3; dx <= 3; dx++) {
+            for (let dy = -3; dy <= 3; dy++) {
+                if (dx === 0 && dy === 0) continue;
+                const nx = x + dx;
+                const ny = y + dy;
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    if (grid[getIndex(nx, ny, width)] === PIPE_IDX) {
+                        pipeNearby = true;
+                        break;
+                    }
+                }
+            }
+            if (pipeNearby) break;
+        }
+        // If surrounded and no pipe nearby, convert to pipe
+        if (surrounded && !pipeNearby) {
+            grid[getIndex(x, y, width)] = PIPE_IDX;
+            return;
+        }
+        
         // Only grow if a human is within 1 space (in any direction)
         let humanNearby = false;
         for (let dx = -1; dx <= 1; dx++) {
@@ -30,6 +67,8 @@ export const concreteParticle: ParticleType = {
             if (humanNearby) break;
         }
         if (!humanNearby) return;
+
+        
 
         // Helper function to check if there's concrete support within a given distance below
         const hasSupport = (checkX: number, checkY: number, supportDistance: number): boolean => {

@@ -81,9 +81,7 @@ export const humanParticle: ParticleType = {
                     const idx = getIndex(ax, ay, width);
                     const targetSpace = grid[idx];
                     // Debug: log what we're checking
-                    console.log(`Human at (${x},${y}) checking (${ax},${ay}): found ${targetSpace}, looking for wood=${WOOD_IDX}, treetop=${TREETOP_IDX}, grass=${GRASS_IDX}`);
                     if (targetSpace === WOOD_IDX || targetSpace === TREETOP_IDX || targetSpace === GRASS_IDX) {
-                        console.log(`Chopping! Converting ${targetSpace} to ${SKY_IDX}`);
                         grid[idx] = SKY_IDX; // Remove wood, turn to sky
                         chopped = true;
                     }
