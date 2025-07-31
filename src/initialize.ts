@@ -1,7 +1,7 @@
 // src/WebGLCanvas.ts
 // Higher-order component for fullscreen WebGL canvas with empty render loop
 
-import { FPS } from './constants';
+import { FPS, TICKS_TO_RENDER_RATIO } from './constants';
 import type { GameState } from './GameState';
 import { SAND_IDX } from './particles/sand.particle';
 import { SKY_IDX } from './particles/sky.particle';
@@ -10,6 +10,8 @@ import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
 import { maybeSpawnHumans } from './environment/maybeSpawnHumansProcess';
 import { getRandom } from './randomseed';
+
+let renderCounter = 0;
 
 export function initialize(target: HTMLElement, gameState: GameState) {
   // Canvas setup
@@ -54,7 +56,12 @@ export function initialize(target: HTMLElement, gameState: GameState) {
       accumulator -= targetDelta;
     }
 
-    renderBoard(canvas, ctx, gameState);
+    renderCounter++;
+    if (renderCounter >= TICKS_TO_RENDER_RATIO) {
+      renderCounter = 0;
+      // Slow down the simulation every few ticks
+      renderBoard(canvas, ctx, gameState);
+    }
     requestAnimationFrame(mainLoop);
   }
   requestAnimationFrame(mainLoop);
