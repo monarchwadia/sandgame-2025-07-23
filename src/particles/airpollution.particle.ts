@@ -1,37 +1,65 @@
-import type { ParticleType } from './particles.types';
-import { AIRPOLLUTION_COLOR } from '../palette';
-import { SKY_IDX } from './sky.particle';
-import { getRandom } from '../randomseed';
+import type { ParticleType } from "./particles.types";
+import { AIRPOLLUTION_COLOR } from "../palette";
+import { SKY_IDX } from "./sky.particle";
+import { getRandom } from "../randomseed";
 
 export const AIRPOLLUTION_IDX = 13;
 
 export const airpollutionParticle: ParticleType = {
-    name: 'airpollution',
-    color: AIRPOLLUTION_COLOR,
-    behavior: function(grid, width, height, x, y) {
-        const r = getRandom();
-        const idx = x + y * width;
-        
-        // Dissipate (0.03% chance)
-        if (r < 0.0003) {
-            grid[idx] = SKY_IDX;
-            return;
-        }
+  name: "airpollution",
+  color: AIRPOLLUTION_COLOR,
+  behavior: function (grid, width, height, x, y) {
+    const idx = x + y * width;
 
-        // Rise if below 15% height, drift if at top
-        if (y >= Math.floor(height * 0.15)) {
-            // Rise up (3% chance)
-            if (r < 0.03 && y > 0 && grid[idx - width] === SKY_IDX) {
-                grid[idx - width] = AIRPOLLUTION_IDX;
-                grid[idx] = SKY_IDX;
-            }
-        } else if (r < 0.02) {
-            // Drift horizontally (2% chance)
-            const nx = x + (r < 0.01 ? -1 : 1);
-            if (nx >= 0 && nx < width && grid[nx + y * width] === SKY_IDX) {
-                grid[nx + y * width] = AIRPOLLUTION_IDX;
-                grid[idx] = SKY_IDX;
-            }
+    // Dissipate (0.03% chance)
+    if (getRandom() < 0.0003) {
+      grid[idx] = SKY_IDX;
+      return;
+    }
+
+    // Oscillate between top of screen and 15% height
+    const topThreshold = Math.floor(height * 0.15);
+
+    // In top 15% - Brownian motion (random walk in all directions)
+    if (getRandom() < 0.3) {
+      const directions = [
+        [0, -1], // up
+        [0, 1], // down
+        [-1, 0], // left
+        [1, 0], // right
+        [-1, -1], // up-left
+        [1, -1], // up-right
+        [-1, 1], // down-left
+        [1, 1], // down-right
+      ];
+
+      const [dx, dy] =
+        directions[Math.floor(getRandom() * 8 * directions.length) % directions.length];
+      const nx = x + dx;
+      const ny = y + dy;
+
+      if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+        const newIdx = nx + ny * width;
+        if (grid[newIdx] === SKY_IDX) {
+          grid[newIdx] = AIRPOLLUTION_IDX;
+          grid[idx] = SKY_IDX;
+        }
+      }
+    } else {
+        // brownian motion upwards
+        const movementThreshold = getRandom();
+        // 75% chance of up
+        // 25% chance of down movement
+        // 50-50 chance of left/right movement
+        let yMovement = movementThreshold < 0.75 ? -1 : 1;
+        let xMovement = movementThreshold < 0.5 ? -1 : 1;
+
+        const newY = Math.max(0, y + yMovement);
+        const newIdx = x + newY * width;
+        if (grid[newIdx] === SKY_IDX) {
+          grid[newIdx] = AIRPOLLUTION_IDX;
+          grid[idx] = SKY_IDX;
         }
     }
+  },
 };

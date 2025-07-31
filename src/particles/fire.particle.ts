@@ -5,6 +5,7 @@ import { WOOD_IDX } from './wood.particle';
 import { TREETOP_IDX } from './treetop.particle';
 import { GRASS_IDX } from './grass.particle';
 import { FIRE_COLOR } from '../palette';
+import { AIRPOLLUTION_IDX } from './airpollution.particle';
 import { getRandom } from '../randomseed';
 
 export const FIRE_IDX = 8;
@@ -40,6 +41,15 @@ export const fireParticle: ParticleType = {
             grid[i] = SKY_IDX;
             return;
         }
+
+        // Fire occasionally spawns air pollution above it
+        if (y > 0 && getRandom() < 0.02) {
+            const aboveIdx = getIndex(x, y - 1, width);
+            if (grid[aboveIdx] === SKY_IDX) {
+                grid[aboveIdx] = AIRPOLLUTION_IDX;
+            }
+        }
+
         // Fire spreads to adjacent flammable particles
         const adjacents = [
             getIndex(x - 1, y, width),
