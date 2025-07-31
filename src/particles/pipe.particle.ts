@@ -59,7 +59,24 @@ export const pipeParticle: ParticleType = {
             if (aboveParticle === SKY_IDX) {
                 // Spout water slowly
                 if (Math.random() < 0.01) {
-                    grid[aboveIdx] = FIRE_IDX; // Spout water
+                    grid[aboveIdx] = WATER_IDX; // Spout water
+
+                    // Build a concrete container around the spout in a radius
+                    const radius = 7;
+                    for (let dx = -radius; dx <= radius; dx++) {
+                        for (let dy = -radius; dy <= radius; dy++) {
+                            // Only build on the edge of the radius (circle)
+                            if (Math.abs(dx) + Math.abs(dy) !== radius) continue;
+                            const cx = x + dx;
+                            const cy = (headY - 1) + dy;
+                            if (cx >= 0 && cx < width && cy >= 0 && cy < height) {
+                                const cIdx = getIndex(cx, cy, width);
+                                if (grid[cIdx] === SKY_IDX && Math.random() < 0.05) {
+                                    grid[cIdx] = CONCRETE_IDX;
+                                }
+                            }
+                        }
+                    }
                 }
             } else if (aboveParticle !== PIPE_IDX && aboveParticle !== WATER_IDX && aboveParticle !== FIRE_IDX) {
                 grid[aboveIdx] = PIPE_IDX; // Break through concrete/other
