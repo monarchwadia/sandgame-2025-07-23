@@ -38,7 +38,7 @@ export const acidParticle: ParticleType = {
                 // Acid corrodes concrete, sand, grass, and wood
                 if (particle === CONCRETE_IDX || particle === SAND_IDX || 
                     particle === GRASS_IDX || particle === WOOD_IDX) {
-                    if (getRandom() < 0.00001) { // 5% chance to corrode
+                    if (getRandom() < 0.01) { // chance to corrode
                         grid[idx] = SKY_IDX;
                     }
                 }
