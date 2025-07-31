@@ -49,9 +49,10 @@ export const lightningParticle: ParticleType = {
             for (const idx of cells) {
                 if (idx >= 0 && grid[idx] !== SKY_IDX && grid[idx] !== LIGHTNING_IDX) {
                     // CURRENT CELL IS THE STRIKE POINT
-                    // Ignite all adjacent wood, treetop, grass, and human
-                    for (let dx = -1; dx <= 1; dx++) {
-                        for (let dy = -1; dy <= 1; dy++) {
+                    // Ignite a larger fireball area (5x5) around the strike point
+                    const fireballRadius = 2; // 2 = 5x5 area
+                    for (let dx = -fireballRadius; dx <= fireballRadius; dx++) {
+                        for (let dy = -fireballRadius; dy <= fireballRadius; dy++) {
                             if (dx === 0 && dy === 0) continue;
                             const nx = x + dx;
                             const ny = y + dy;
@@ -61,7 +62,8 @@ export const lightningParticle: ParticleType = {
                                     grid[ni] === WOOD_IDX ||
                                     grid[ni] === TREETOP_IDX ||
                                     grid[ni] === GRASS_IDX ||
-                                    grid[ni] === HUMAN_IDX
+                                    grid[ni] === HUMAN_IDX ||
+                                    grid[ni] === SKY_IDX // Allow lightning to ignite sky
                                 ) {
                                     grid[ni] = FIRE_IDX;
                                 }

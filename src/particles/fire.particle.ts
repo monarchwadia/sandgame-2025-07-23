@@ -13,6 +13,27 @@ export const fireParticle: ParticleType = {
     color: FIRE_COLOR,
     behavior: function(grid, width, _height, x, y) {
         const i = getIndex(x, y, width);
+
+        // Brownian vibration: randomly move fire to adjacent sky cell
+        const directions = [
+            [-1, 0], [1, 0], [0, -1], [0, 1],
+            [-1, -1], [1, -1], [-1, 1], [1, 1]
+        ];
+        // Shuffle directions for randomness
+        for (const [dx, dy] of directions.sort(() => Math.random() - 0.5)) {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx >= 0 && nx < width && ny >= 0 && ny < grid.length / width) {
+                const ni = getIndex(nx, ny, width);
+                // If adjacent cell is sky, move fire there
+                if (grid[ni] === SKY_IDX && Math.random() < 0.02) {
+                    grid[ni] = FIRE_IDX;
+                    grid[i] = SKY_IDX;
+                    return;
+                }
+            }
+        }
+
         // Fire burns out with a small chance
         if (Math.random() < 0.05) {
             grid[i] = SKY_IDX;

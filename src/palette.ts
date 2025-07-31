@@ -9,7 +9,7 @@ export const WOOD_COLOR = 'rgba(139, 69, 19, 1)'; // rich brown wood
 export const TREETOP_COLOR = 'rgba(34, 139, 34, 1)'; // forest green
 export const CONCRETE_COLOR = 'rgba(128, 128, 128, 1)'; // gray concrete
 export const HUMAN_COLOR = 'rgba(180, 60, 220, 1)'; // vibrant purple for human
-export const FIRE_COLOR = 'rgba(255, 80, 20, 1)'; // bright orange-red for fire
+export const FIRE_COLOR = 'rgba(255, 52, 21, 1)'; // bright orange-red for fire
 export const LIGHTNING_COLOR = 'rgba(255, 255, 120, 1)'; // bright yellow for lightning
 
 // Sky colors for each hour (0-23) - realistic day/night cycle with rich saturation
