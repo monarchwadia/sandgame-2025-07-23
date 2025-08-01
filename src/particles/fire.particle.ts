@@ -12,7 +12,7 @@ export const FIRE_IDX = 8;
 export const fireParticle: ParticleType = {
     name: 'fire',
     color: FIRE_COLOR,
-    behavior: function(grid, width, height, x, y) {
+    behavior: function(grid, width, _height, x, y) {
         // behaviour is based on a random number:
         // 0.00 - 0.05: burns out
         // 0.05 - 0.10: stays, spawns air pollution above
