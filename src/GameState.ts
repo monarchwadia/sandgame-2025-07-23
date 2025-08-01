@@ -5,7 +5,7 @@
 import { GRID_WIDTH, GRID_HEIGHT } from './constants';
 import { SKY_IDX } from './particles/sky.particle';
 
-export const grid = new Uint32Array(GRID_WIDTH * GRID_HEIGHT); // 0 = empty, 1 = sand, etc.
+const grid = new Uint32Array(GRID_WIDTH * GRID_HEIGHT); // 0 = empty, 1 = sand, etc.
 grid.fill(SKY_IDX); // Initialize grid to empty
 
 export const gameState = {

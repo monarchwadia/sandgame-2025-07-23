@@ -1,9 +1,3 @@
-// src/gridUtils.ts
-// Utility functions for grid position calculations
-
-import { memoizeByParams } from "./cacheUtils";
-import { getRandom } from "./randomseed";
-
 export function getIndex(x: number, y: number, width: number): number {
   return y * width + x;
 }

@@ -13,7 +13,7 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
     imageData = ctx.createImageData(canvas.width, canvas.height);
   }
 
-  const { grid, width, height } = gameState;
+  const { width, height } = gameState;
   const data = imageData.data;
   
   // Clear the image data
@@ -21,7 +21,7 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
   
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const particleType = grid[y * width + x];
+      const particleType = gameState.grid[y * width + x];
       const color = particlesRegistry[particleType].color;
       const resolvedColor = typeof color === 'function' ? color(gameState) : color;
       const [r, g, b, a] = resolvedColor;

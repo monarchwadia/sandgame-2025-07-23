@@ -50,7 +50,13 @@ export function initialize(target: HTMLElement, gameState: GameState) {
     lastUpdate = now;
 
     // Run fixed-timestep simulation steps to catch up
+    let maxSteps = 10;
     while (accumulator >= targetDelta) {
+      maxSteps--;
+      if (maxSteps < 0) {
+        // Prevent infinite loop
+        break;
+      }
       updateGameState(gameState);
       maybeSpawnHumans(gameState);
       accumulator -= targetDelta;
