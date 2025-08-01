@@ -1,4 +1,4 @@
-import { getIndex } from '../gridUtils';
+import { getAdjacentCells, getIndex, getRandomNeighbourCell } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
 import { WOOD_IDX } from './wood.particle';
@@ -13,27 +13,14 @@ export const FIRE_IDX = 8;
 export const fireParticle: ParticleType = {
     name: 'fire',
     color: FIRE_COLOR,
-    behavior: function(grid, width, _height, x, y) {
+    behavior: function(grid, width, height, x, y) {
         const i = getIndex(x, y, width);
 
-        // Brownian vibration: randomly move fire to adjacent sky cell
-        const directions = [
-            [-1, 0], [1, 0], [0, -1], [0, 1],
-            [-1, -1], [1, -1], [-1, 1], [1, 1]
-        ];
-        // Shuffle directions for randomness
-        for (const [dx, dy] of directions.sort(() => getRandom() - 0.5)) {
-            const nx = x + dx;
-            const ny = y + dy;
-            if (nx >= 0 && nx < width && ny >= 0 && ny < grid.length / width) {
-                const ni = getIndex(nx, ny, width);
-                // If adjacent cell is sky, move fire there
-                if (grid[ni] === SKY_IDX && getRandom() < 0.02) {
-                    grid[ni] = FIRE_IDX;
-                    grid[i] = SKY_IDX;
-                    return;
-                }
-            }
+        const neighbour = getRandomNeighbourCell(x, y, width, height);
+        if (grid[neighbour.index] === SKY_IDX && getRandom() < 0.02) {
+            grid[neighbour.index] = FIRE_IDX;
+            grid[i] = SKY_IDX;
+            return;
         }
 
         // Fire burns out with a small chance
@@ -43,7 +30,7 @@ export const fireParticle: ParticleType = {
         }
 
         // Fire occasionally spawns air pollution above it
-        if (y > 0 && getRandom() < 0.02) {
+        if (y > 0 && getRandom() < 0.04) {
             const aboveIdx = getIndex(x, y - 1, width);
             if (grid[aboveIdx] === SKY_IDX) {
                 grid[aboveIdx] = AIRPOLLUTION_IDX;
@@ -51,22 +38,18 @@ export const fireParticle: ParticleType = {
         }
 
         // Fire spreads to adjacent flammable particles
-        const adjacents = [
-            getIndex(x - 1, y, width),
-            getIndex(x + 1, y, width),
-            getIndex(x, y - 1, width),
-            getIndex(x, y + 1, width)
-        ];
-        for (const idx of adjacents) {
-            if (idx >= 0 && idx < grid.length) {
-                if (
-                    grid[idx] === WOOD_IDX ||
-                    grid[idx] === TREETOP_IDX ||
-                    grid[idx] === GRASS_IDX
-                ) {
-                    if (getRandom() < 0.3) {
-                        grid[idx] = FIRE_IDX;
-                    }
+        const adjacents = Object.entries(getAdjacentCells(x, y, width, height));
+        for (const [_, adj] of adjacents) {
+            if (!adj) continue; // Skip if out of bounds
+
+            const particle = grid[adj.index];
+            if (
+                particle === WOOD_IDX ||
+                particle === TREETOP_IDX ||
+                particle === GRASS_IDX
+            ) {
+                if (getRandom() < 0.3) {
+                    grid[adj.index] = FIRE_IDX;
                 }
             }
         }

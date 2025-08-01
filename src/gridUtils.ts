@@ -2,6 +2,7 @@
 // Utility functions for grid position calculations
 
 import { memoizeByParams } from "./cacheUtils";
+import { getRandom } from "./randomseed";
 
 export function getIndex(x: number, y: number, width: number): number {
   return y * width + x;
@@ -70,3 +71,16 @@ export const getAdjacentCells = memoizeByParams(function _getAdjacentCells(x: nu
 });
 
 // ============================================================
+
+const _directions = [
+    [-1, 0], [1, 0], [0, -1], [0, 1],
+    [-1, -1], [1, -1], [-1, 1], [1, 1]
+];
+export const getRandomNeighbourCell = (x: number, y: number, width: number, height: number): XYIndexes => {
+  let candidate: XYIndexes | null = null;
+  while (!candidate) {
+    const dir = _directions[Math.floor(getRandom() * _directions.length)];
+    candidate = getcachedXYIndexes(x + dir[0], y + dir[1], width, height);
+  }
+  return candidate;
+}
