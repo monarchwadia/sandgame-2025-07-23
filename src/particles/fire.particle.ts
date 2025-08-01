@@ -1,4 +1,4 @@
-import { forEachNeighbourInAdjacentCells, getAdjacentCells, getIndex, getRandomNeighbourCell, getRandomNeighbourFromAdjacentCells, type XYIndexes } from '../gridUtils';
+import { getAdjacentCells, getIndex, type XYIndexes } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
 import { WOOD_IDX } from './wood.particle';
