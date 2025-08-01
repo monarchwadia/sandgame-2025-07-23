@@ -1,4 +1,4 @@
-import { getIndex, getBelow, getAdjacentCells } from '../gridUtils';
+import { getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { ACID_COLOR } from '../palette';
 import { SKY_IDX } from './sky.particle';
@@ -10,40 +10,76 @@ import { getRandom } from '../randomseed';
 
 export const ACID_IDX = 14;
 
+const corrode = (
+    grid: Uint32Array,
+    idx: number,
+) => {
+    if (idx < 0 || idx >= grid.length) return;
+    // Acid corrodes concrete, sand, grass, and wood
+    if (grid[idx] === CONCRETE_IDX || grid[idx] === SAND_IDX || 
+        grid[idx] === GRASS_IDX || grid[idx] === WOOD_IDX) {
+            grid[idx] = SKY_IDX;
+        }
+}
+
 export const acidParticle: ParticleType = {
     name: 'acid',
     color: ACID_COLOR,
     behavior: function(grid, width, height, x, y) {
-        const i = getIndex(x, y, width);
+        // corrosion behaviour depends on a random number:
+        // 0.00 - 0.01: attempts to corrode up
+        // 0.01 - 0.02: attempts to corrode upright
+        // 0.02 - 0.03: attempts to corrode right
+        // 0.03 - 0.04: attempts to corrode downright
+        // 0.04 - 0.05: attempts to corrode down
+        // 0.05 - 0.06: attempts to corrode downleft
+        // 0.06 - 0.07: attempts to corrode left
+        // 0.07 - 0.08: attempts to corrode upleft
+        // 0.999 - 1.00: disappears
+        // it always moves like a liquid particle.
 
-        // chance to disappear
-        if (getRandom() < 0.001) { // 0.1%
-            grid[i] = SKY_IDX; // Remove acid particle
-            return;
+        const i = y * width + x;
+        const randomInt = getRandom();
+
+        if (getRandom() < 0.001) {
+            // corrode up
+            corrode(grid, ((y - 1) * width + x));
+        } else if (randomInt < 0.01) {
+            // corrode upright
+            corrode(grid, ((y - 1) * width + (x + 1)));
+        } else if (randomInt < 0.02) {
+            // corrode right
+            corrode(grid, (y * width + (x + 1)));
+        } else if (randomInt < 0.03) {
+            // corrode downright
+            corrode(grid, ((y + 1) * width + (x + 1)));
+        } else if (randomInt < 0.04) {
+            // corrode down
+            corrode(grid, ((y + 1) * width + x));
+        } else if (randomInt < 0.05) {
+            // corrode downleft
+            corrode(grid, ((y + 1) * width + (x - 1)));
+        } else if (randomInt < 0.06) {
+            // corrode left
+            corrode(grid, (y * width + (x - 1)));
+        } else if (randomInt < 0.07) {
+            // corrode upleft
+            corrode(grid, ((y - 1) * width + (x - 1)));
+        } else if (randomInt < 0.08) {
+            // corrode up
+            corrode(grid, ((y - 1) * width + x));
+        } else if (randomInt < 0.999) {
+            // no-op
+        } else if (randomInt >= 0.999) {
+            // disappear
+            grid[i] = SKY_IDX;
         }
+
+        // --- movement ---
         
-        // Acid corrodes adjacent particles
-        const adjacents = getAdjacentCells(x, y, width, height);
-        
-        
-        for (const [_, adj] of Object.entries(adjacents)) {
-            if (!adj) continue; // Skip if out of bounds
-        
-            const { index } = adj;
-            const particle = grid[index];
-            
-            // Acid corrodes concrete, sand, grass, and wood
-            if (particle === CONCRETE_IDX || particle === SAND_IDX || 
-                particle === GRASS_IDX || particle === WOOD_IDX) {
-                if (getRandom() < 0.01) { // chance to corrode
-                    grid[index] = SKY_IDX;
-                }
-            }
-        }
-        
-        // Acid falls down like water but corrodes what it touches
+        // Acid falls down like water
         if (y < height - 1) {
-            const below = getBelow(x, y, width);
+            const below = (y + 1) * width + x;
             if (grid[below] === SKY_IDX) {
                 grid[i] = SKY_IDX;
                 grid[below] = ACID_IDX;
@@ -52,8 +88,8 @@ export const acidParticle: ParticleType = {
         }
         
         // Try to move left or right if not moving down
-        const left = getIndex(x - 1, y, width);
-        const right = getIndex(x + 1, y, width);
+        const left = (y * width + (x - 1));
+        const right = (y * width + (x + 1));
         const canLeft = x > 0 && grid[left] === SKY_IDX;
         const canRight = x < width - 1 && grid[right] === SKY_IDX;
         
