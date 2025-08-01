@@ -45,7 +45,7 @@ export const treetopParticle: ParticleType = {
         // If not in photosynthesis hours, and not touching wood or treetop, chance to disappear
         if (currentHour < startHour || currentHour > endHour) {
             if (woodNeighbours === 0) {
-                if (getRandom() < 0.003) {
+                if (getRandom() < 0.0001) {
                     grid[getIndex(x, y, width)] = SKY_IDX;
                 }
             }
