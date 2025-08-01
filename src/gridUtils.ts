@@ -1,6 +1,8 @@
 // src/gridUtils.ts
 // Utility functions for grid position calculations
 
+import { memoizeByParams } from "./cacheUtils";
+
 export function getIndex(x: number, y: number, width: number): number {
   return y * width + x;
 }
@@ -23,3 +25,48 @@ export function getXY(index: number, width: number): { x: number, y: number } {
     y: Math.floor(index / width)
   };
 }
+
+
+// ============================== Adjacents ==============================
+
+type XYIndexes = {
+  x: number;
+  y: number;
+  index: number;
+}
+
+type AdjacentCells = {
+  left: XYIndexes | null;
+  right: XYIndexes | null;
+  up: XYIndexes | null;
+  down: XYIndexes | null;
+  upLeft: XYIndexes | null;
+  upRight: XYIndexes | null;
+  downLeft: XYIndexes | null;
+  downRight: XYIndexes | null;
+}
+
+const getcachedXYIndexes = memoizeByParams(function _getcachedXYIndexes(x: number, y: number, width: number, height: number): XYIndexes | null {
+  if (x < 0 || x >= width || y < 0 || y >= height) {
+    return null;
+  }
+
+  return { x, y, index: getIndex(x, y, width) };
+})
+
+
+
+export const getAdjacentCells = memoizeByParams(function _getAdjacentCells(x: number, y: number, width: number, height: number): AdjacentCells {
+  return {
+    left: getcachedXYIndexes(x - 1, y, width, height),
+    right: getcachedXYIndexes(x + 1, y, width, height),
+    up: getcachedXYIndexes(x, y - 1, width, height),
+    down: getcachedXYIndexes(x, y + 1, width, height),
+    upLeft: getcachedXYIndexes(x - 1, y - 1, width, height),
+    upRight: getcachedXYIndexes(x + 1, y - 1, width, height),
+    downLeft: getcachedXYIndexes(x - 1, y + 1, width, height),
+    downRight: getcachedXYIndexes(x + 1, y + 1, width, height)
+  };
+});
+
+// ============================================================

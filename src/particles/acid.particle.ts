@@ -1,4 +1,4 @@
-import { getIndex, getBelow } from '../gridUtils';
+import { getIndex, getBelow, getAdjacentCells } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { ACID_COLOR } from '../palette';
 import { SKY_IDX } from './sky.particle';
@@ -23,24 +23,20 @@ export const acidParticle: ParticleType = {
         }
         
         // Acid corrodes adjacent particles
-        const adjacents = [
-            { x: x - 1, y: y },
-            { x: x + 1, y: y },
-            { x: x, y: y - 1 },
-            { x: x, y: y + 1 }
-        ];
+        const adjacents = getAdjacentCells(x, y, width, height);
         
-        for (const adj of adjacents) {
-            if (adj.x >= 0 && adj.x < width && adj.y >= 0 && adj.y < height) {
-                const idx = getIndex(adj.x, adj.y, width);
-                const particle = grid[idx];
-                
-                // Acid corrodes concrete, sand, grass, and wood
-                if (particle === CONCRETE_IDX || particle === SAND_IDX || 
-                    particle === GRASS_IDX || particle === WOOD_IDX) {
-                    if (getRandom() < 0.01) { // chance to corrode
-                        grid[idx] = SKY_IDX;
-                    }
+        
+        for (const [_, adj] of Object.entries(adjacents)) {
+            if (!adj) continue; // Skip if out of bounds
+        
+            const { index } = adj;
+            const particle = grid[index];
+            
+            // Acid corrodes concrete, sand, grass, and wood
+            if (particle === CONCRETE_IDX || particle === SAND_IDX || 
+                particle === GRASS_IDX || particle === WOOD_IDX) {
+                if (getRandom() < 0.01) { // chance to corrode
+                    grid[index] = SKY_IDX;
                 }
             }
         }
