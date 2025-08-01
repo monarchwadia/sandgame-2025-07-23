@@ -30,7 +30,7 @@ export function getXY(index: number, width: number): { x: number, y: number } {
 
 // ============================== Adjacents ==============================
 
-type XYIndexes = {
+export type XYIndexes = {
   x: number;
   y: number;
   index: number;
