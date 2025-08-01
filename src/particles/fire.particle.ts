@@ -24,7 +24,7 @@ export const fireParticle: ParticleType = {
 
         const randomInt = getRandom();
 
-        // probabilities:
+        // behaviour is based on a random number:
         // 0.00 - 0.05: burns out
         // 0.05 - 0.10: stays, spawns air pollution above
         // 0.10 - 0.20: if possible, moves up
@@ -35,8 +35,8 @@ export const fireParticle: ParticleType = {
         // 0.40 - 0.45: if possible, move leftdown
         // 0.45 - 0.50: if possible, move left
         // 0.50 - 0.55: if possible, move upleft
-        // 0.5 - 0.85: burns out wood, treetops, and grass
-        // 0.85 - 1.00: stays
+        // 0.55 - 1.00: stays
+        // Always burns adjacent wood, treetop, or grass
 
         // Fire moves around randomly
         if (randomInt < 0.05) {
@@ -107,7 +107,7 @@ export const fireParticle: ParticleType = {
         } else if (randomInt < 1) {
             // Stays
         }
-        
+
         // Always spreads if possible
         for (const adj of Object.values(adjacents)) {
             if (adj) {
