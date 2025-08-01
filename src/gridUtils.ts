@@ -37,6 +37,7 @@ export type XYIndexes = {
 }
 
 type AdjacentCells = {
+  self: XYIndexes | null;
   left: XYIndexes | null;
   right: XYIndexes | null;
   up: XYIndexes | null;
@@ -59,6 +60,7 @@ const getcachedXYIndexes = memoizeByParams(function _getcachedXYIndexes(x: numbe
 
 export const getAdjacentCells = memoizeByParams(function _getAdjacentCells(x: number, y: number, width: number, height: number): AdjacentCells {
   return {
+    self: getcachedXYIndexes(x, y, width, height),
     left: getcachedXYIndexes(x - 1, y, width, height),
     right: getcachedXYIndexes(x + 1, y, width, height),
     up: getcachedXYIndexes(x, y - 1, width, height),
@@ -113,4 +115,22 @@ export const forEachNeighbourInAdjacentCells = (
       callback(cell);
     }
   }
+}
+
+export const adjacentIsParticle = (
+    grid: Uint32Array,
+    adjacent: XYIndexes | null,
+    particleType: number
+): adjacent is XYIndexes => {
+    return adjacent !== null && grid[adjacent.index] === particleType;
+}
+
+export const setAdjacentParticle = (
+    grid: Uint32Array,
+    adjacent: XYIndexes | null,
+    particleType: number
+): void => {
+    if (adjacent) {
+        grid[adjacent.index] = particleType;
+    }
 }

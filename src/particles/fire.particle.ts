@@ -1,4 +1,3 @@
-import { getAdjacentCells, getIndex, type XYIndexes } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
 import { WOOD_IDX } from './wood.particle';
@@ -10,20 +9,10 @@ import { getRandom } from '../randomseed';
 
 export const FIRE_IDX = 8;
 
-const adjacentIsSky = (grid: Uint32Array, adjacent: XYIndexes | null): adjacent is XYIndexes => {
-    return adjacent !== null && grid[adjacent.index] === SKY_IDX;
-}
-
 export const fireParticle: ParticleType = {
     name: 'fire',
     color: FIRE_COLOR,
     behavior: function(grid, width, height, x, y) {
-        const i = getIndex(x, y, width);
-
-        const adjacents = getAdjacentCells(x, y, width, height);
-
-        const randomInt = getRandom();
-
         // behaviour is based on a random number:
         // 0.00 - 0.05: burns out
         // 0.05 - 0.10: stays, spawns air pollution above
@@ -38,70 +27,82 @@ export const fireParticle: ParticleType = {
         // 0.55 - 1.00: stays
         // Always burns adjacent wood, treetop, or grass
 
-        // Fire moves around randomly
+        const selfIdx = y * width + x;
+        const upIdx = (y-1) * width + x;
+        const upRightIdx = (y-1) * width + (x+1);
+        const rightIdx = y * width + (x+1);
+        const downRightIdx = (y+1) * width + (x+1);
+        const downIdx = (y+1) * width + x;
+        const downLeftIdx = (y+1) * width + (x-1);
+        const leftIdx = y * width + (x-1);
+        const upLeftIdx = (y-1) * width + (x-1);
+
+        const randomInt = getRandom();
+
         if (randomInt < 0.05) {
             // Burn out
-            grid[i] = SKY_IDX;
+            grid[selfIdx] = SKY_IDX;
             return;
         } else if (randomInt < 0.10) {
-            // Spawn air pollution above
-            if (adjacents.up && grid[adjacents.up.index] === SKY_IDX) {
-                grid[adjacents.up.index] = AIRPOLLUTION_IDX;
+            if (upIdx > 0 && grid[upIdx] === SKY_IDX) {
+                // Spawn air pollution above
+                grid[upIdx] = AIRPOLLUTION_IDX;
             }
         } else if (randomInt < 0.20) {
             // Move up if possible
-            if (adjacentIsSky(grid, adjacents.up)) {
-                grid[adjacents.up.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (upIdx> 0 && grid[upIdx] === SKY_IDX) {
+                grid[upIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
             }
         } else if (randomInt < 0.25) {
-            // Move up-right if possible
-            if (adjacentIsSky(grid, adjacents.upRight)) {
-                grid[adjacents.upRight.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (upRightIdx > 0 && grid[upRightIdx] === SKY_IDX) {
+                // Move up-right if possible
+                grid[upRightIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
-            }  
+            }
+            
         } else if (randomInt < 0.30) {
             // Move right if possible
-            if (adjacentIsSky(grid, adjacents.right)) {
-                grid[adjacents.right.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (rightIdx > 0 && grid[rightIdx] === SKY_IDX) {
+                grid[rightIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
             }
         } else if (randomInt < 0.35) {
             // Move right-down if possible
-            if (adjacentIsSky(grid, adjacents.downRight)) {
-                grid[adjacents.downRight.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (downRightIdx > 0 && grid[downRightIdx] === SKY_IDX) {
+                grid[downRightIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
             }
         } else if (randomInt < 0.40) {
             // Move down if possible
-            if (adjacentIsSky(grid, adjacents.down)) {
-                grid[adjacents.down.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (downIdx > 0 && grid[downIdx] === SKY_IDX) {
+                grid[downIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
             }
         } else if (randomInt < 0.45) {
             // Move left-down if possible
-            if (adjacentIsSky(grid, adjacents.downLeft)) {
-                grid[adjacents.downLeft.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (downLeftIdx > 0 && grid[downLeftIdx] === SKY_IDX) {
+                grid[downLeftIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
             }
         } else if (randomInt < 0.50) {
             // Move left if possible
-            if (adjacentIsSky(grid, adjacents.left)) {
-                grid[adjacents.left.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (leftIdx > 0 && grid[leftIdx] === SKY_IDX) {
+                grid[leftIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
             }
         } else if (randomInt < 0.55) {
             // Move up-left if possible
-            if (adjacentIsSky(grid, adjacents.upLeft)) {
-                grid[adjacents.upLeft.index] = FIRE_IDX;
-                grid[i] = SKY_IDX;
+            if (upLeftIdx > 0 && grid[upLeftIdx] === SKY_IDX) {
+                grid[upLeftIdx] = FIRE_IDX;
+                grid[selfIdx] = SKY_IDX;
                 return;
             }
         } else if (randomInt < 1) {
@@ -109,12 +110,15 @@ export const fireParticle: ParticleType = {
         }
 
         // Always spreads if possible
-        for (const adj of Object.values(adjacents)) {
-            if (adj) {
-                const particle = grid[adj.index];
-                if (particle === WOOD_IDX || particle === TREETOP_IDX || particle === GRASS_IDX) {
-                    grid[adj.index] = FIRE_IDX;
-                }
+        for (const idx of [
+            upIdx, upRightIdx, rightIdx, downRightIdx, downIdx, downLeftIdx, leftIdx, upLeftIdx
+        ]) {
+            if (idx < 0 || idx >= grid.length) continue;
+            const particleType = grid[idx];
+            if (particleType === WOOD_IDX ||
+                particleType === TREETOP_IDX ||
+                particleType === GRASS_IDX) {
+                grid[idx] = FIRE_IDX; // Ignite adjacent wood, treetop, or grass
             }
         }
     }
