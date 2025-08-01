@@ -78,9 +78,39 @@ const _directions = [
 ];
 export const getRandomNeighbourCell = (x: number, y: number, width: number, height: number): XYIndexes => {
   let candidate: XYIndexes | null = null;
+  let whileSafety = 1000;
   while (!candidate) {
+    whileSafety--;
+    if (whileSafety <= 0) {
+      throw new Error("Infinite loop in getRandomNeighbourCell");
+    }
     const dir = _directions[Math.floor(getRandom() * _directions.length)];
     candidate = getcachedXYIndexes(x + dir[0], y + dir[1], width, height);
   }
   return candidate;
+}
+
+export const getRandomNeighbourFromAdjacentCells = (adjacents: AdjacentCells): XYIndexes => {
+  let candidate: XYIndexes | null = null;
+  const vals = Object.values(adjacents);
+  let whileSafety = 1000;
+  while (!candidate) {
+    whileSafety--;
+    if (whileSafety <= 0) {
+      throw new Error("Infinite loop in getRandomNeighbourFromAdjacentCells");
+    }
+    candidate = vals[Math.floor(getRandom() * vals.length)];
+  }
+  return candidate;
+}
+
+export const forEachNeighbourInAdjacentCells = (
+  adjacents: AdjacentCells,
+  callback: (cell: XYIndexes) => void
+): void => {
+  for (const cell of Object.values(adjacents)) {
+    if (cell) {
+      callback(cell);
+    }
+  }
 }

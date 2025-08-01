@@ -1,4 +1,4 @@
-import { getAdjacentCells, getIndex, getRandomNeighbourCell } from '../gridUtils';
+import { forEachNeighbourInAdjacentCells, getAdjacentCells, getIndex, getRandomNeighbourCell, getRandomNeighbourFromAdjacentCells } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
 import { WOOD_IDX } from './wood.particle';
@@ -16,7 +16,10 @@ export const fireParticle: ParticleType = {
     behavior: function(grid, width, height, x, y) {
         const i = getIndex(x, y, width);
 
-        const neighbour = getRandomNeighbourCell(x, y, width, height);
+        const adjacents = getAdjacentCells(x, y, width, height);
+
+        // Fire moves around randomly
+        const neighbour = getRandomNeighbourFromAdjacentCells(adjacents);
         if (grid[neighbour.index] === SKY_IDX && getRandom() < 0.02) {
             grid[neighbour.index] = FIRE_IDX;
             grid[i] = SKY_IDX;
@@ -30,26 +33,25 @@ export const fireParticle: ParticleType = {
         }
 
         // Fire occasionally spawns air pollution above it
-        if (y > 0 && getRandom() < 0.04) {
-            const aboveIdx = getIndex(x, y - 1, width);
-            if (grid[aboveIdx] === SKY_IDX) {
-                grid[aboveIdx] = AIRPOLLUTION_IDX;
-            }
+        if (adjacents.up && grid[adjacents.up.index] === SKY_IDX && getRandom() < 0.04) {
+            grid[adjacents.up.index] = AIRPOLLUTION_IDX;
         }
 
-        // Fire spreads to adjacent flammable particles
-        const adjacents = Object.entries(getAdjacentCells(x, y, width, height));
-        for (const [_, adj] of adjacents) {
-            if (!adj) continue; // Skip if out of bounds
+        // Fire moves upwards with a small chance
+        if (adjacents.up && grid[adjacents.up.index] === SKY_IDX && getRandom() < 0.1) {
+            grid[adjacents.up.index] = FIRE_IDX;
+            grid[i] = SKY_IDX;
+            return;
+        }
 
-            const particle = grid[adj.index];
-            if (
-                particle === WOOD_IDX ||
-                particle === TREETOP_IDX ||
-                particle === GRASS_IDX
-            ) {
-                if (getRandom() < 0.3) {
-                    grid[adj.index] = FIRE_IDX;
+        // Fire burns out wood, treetops, and grass
+        for (const adj of Object.values(adjacents)) {
+            if (adj) {
+                const particle = grid[adj.index];
+                if (particle === WOOD_IDX || particle === TREETOP_IDX || particle === GRASS_IDX) {
+                    if (getRandom() < 0.3) {
+                        grid[adj.index] = FIRE_IDX;
+                    }
                 }
             }
         }
