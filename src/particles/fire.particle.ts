@@ -6,6 +6,7 @@ import { GRASS_IDX } from './grass.particle';
 import { FIRE_COLOR } from '../palette';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
 import { getRandom } from '../randomseed';
+import { OIL_IDX } from './oil.particle';
 
 export const FIRE_IDX = 8;
 
@@ -117,7 +118,9 @@ export const fireParticle: ParticleType = {
             const particleType = grid[idx];
             if (particleType === WOOD_IDX ||
                 particleType === TREETOP_IDX ||
-                particleType === GRASS_IDX) {
+                particleType === GRASS_IDX ||
+                particleType === OIL_IDX
+            ) {
                 grid[idx] = FIRE_IDX; // Ignite adjacent wood, treetop, or grass
             }
         }
