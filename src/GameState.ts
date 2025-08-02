@@ -3,6 +3,7 @@
 
 // Sand game state using 1D typed array
 import { GRID_WIDTH, GRID_HEIGHT } from './constants';
+import { SAND_IDX } from './particles/sand.particle';
 import { SKY_IDX } from './particles/sky.particle';
 
 const grid = new Uint32Array(GRID_WIDTH * GRID_HEIGHT); // 0 = empty, 1 = sand, etc.
@@ -14,5 +15,8 @@ export const gameState = {
   timeProgressPct: 0, // 0.0-1.0 progress within current hour for smooth transitions
   width: GRID_WIDTH,
   height: GRID_HEIGHT,
+  controls: {
+    selectedTool: SAND_IDX // Default tool is sand
+  }
 };
 export type GameState = typeof gameState;
