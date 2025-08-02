@@ -2,7 +2,6 @@
 // No-op render function for sand game board
 
 import type { GameState } from './GameState';
-import { CELL_WIDTH } from './constants';
 import { particlesRegistry } from './particles/particlesRegistry';
 import { SAND_IDX } from './particles/sand.particle';
 import { FIRE_IDX } from './particles/fire.particle';
