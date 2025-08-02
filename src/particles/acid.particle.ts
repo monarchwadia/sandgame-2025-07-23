@@ -1,4 +1,3 @@
-import { getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { ACID_COLOR } from '../palette';
 import { SKY_IDX } from './sky.particle';

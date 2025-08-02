@@ -1,16 +1,11 @@
-import { getIndex } from "../gridUtils";
 import type { ParticleType } from "./particles.types";
 import { SKY_IDX } from "./sky.particle";
-import { WATER_IDX } from "./water.particle";
 import { PIPE_COLOR } from "../palette";
 import { CONCRETE_IDX } from "./concrete.particle";
-import { FIRE_IDX } from "./fire.particle";
 import { OIL_IDX } from "./oil.particle";
-import { AIRPOLLUTION_IDX } from "./airpollution.particle";
 import { getRandom } from "../randomseed";
 
 export const PIPE_IDX = 10;
-const CONTAINER_RADIUS = 7;
 
 export const pipeParticle: ParticleType = {
   name: "pipe",

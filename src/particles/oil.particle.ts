@@ -1,8 +1,6 @@
-import { getIndex, getBelow } from '../gridUtils';
+import { getIndex } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { SKY_IDX } from './sky.particle';
-import { WATER_IDX } from './water.particle';
-import { FIRE_IDX } from './fire.particle';
 import { OIL_COLOR } from '../palette';
 import type { GameState } from '../GameState';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
