@@ -3,7 +3,7 @@
 
 export const GRID_WIDTH = 400;
 export const GRID_HEIGHT = 400;
-export const FPS = 500; // Frames per second for the game loop
+export const FPS = 60; // Frames per second for the game loop
 export const TICKS_TO_RENDER_RATIO = 2; // How many simulation ticks per render frame. This is an optimization to reduce rendering load.
 export const CELL_WIDTH = window.innerWidth / GRID_WIDTH;
 export const CELL_HEIGHT = window.innerHeight / GRID_HEIGHT;
