@@ -97,9 +97,9 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
 
   // Draw overlay panel if open
   if (UiState.isOverlayOpen) {
-    // Overlay dimensions and position
-    const overlayWidth = Math.min(300, canvas.width * 0.8);
-    const overlayHeight = Math.min(400, canvas.height * 0.7);
+    // Overlay dimensions and position - more responsive
+    const overlayWidth = Math.min(280, canvas.width * 0.85);
+    const overlayHeight = Math.min(350, canvas.height * 0.8);
     const overlayX = (canvas.width - overlayWidth) / 2;
     const overlayY = (canvas.height - overlayHeight) / 2;
     
@@ -112,18 +112,18 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
     ctx.lineWidth = 2;
     ctx.strokeRect(overlayX, overlayY, overlayWidth, overlayHeight);
     
-    // Title
-    const titleFontSize = Math.max(16, Math.min(20, overlayWidth / 15));
+    // Title - smaller and more responsive
+    const titleFontSize = Math.max(12, Math.min(18, overlayWidth / 18));
     ctx.font = `bold ${titleFontSize}px monospace`;
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
-    ctx.fillText('PARTICLE TOOLS', overlayX + overlayWidth / 2, overlayY + 30);
+    ctx.fillText('TOOLS', overlayX + overlayWidth / 2, overlayY + 25);
     
-    // Tool buttons - responsive layout
-    const buttonMargin = 20;
-    const buttonStartY = overlayY + 60;
-    const buttonHeight = Math.max(30, overlayHeight / 15);
-    const buttonFontSize = Math.max(12, Math.min(16, overlayWidth / 20));
+    // Tool buttons - more compact layout
+    const buttonMargin = Math.max(12, overlayWidth / 20);
+    const buttonStartY = overlayY + 45;
+    const buttonHeight = Math.max(25, Math.min(35, overlayHeight / 18));
+    const buttonFontSize = Math.max(10, Math.min(14, overlayWidth / 22));
     
     ctx.font = `bold ${buttonFontSize}px monospace`;
     ctx.textAlign = 'left';
@@ -150,26 +150,29 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
       ctx.fillText(tool.name, buttonX + 15, buttonY + buttonHeight / 2);
     }
     
-    // Brush size controls in overlay
-    const sizeControlY = buttonStartY + tools.length * (buttonHeight + 10) + 30;
-    ctx.fillStyle = 'white';
-    ctx.font = `bold ${buttonFontSize}px monospace`;
-    ctx.textAlign = 'center';
-    ctx.fillText('BRUSH SIZE', overlayX + overlayWidth / 2, sizeControlY);
+    // Brush size controls in overlay - always show, more compact
+    const sizeControlY = buttonStartY + tools.length * (buttonHeight + 8) + 15;
     
-    const sizeButtonY = sizeControlY + 30;
-    const sizeButtonSize = Math.max(25, overlayWidth / 12);
+    ctx.fillStyle = 'white';
+    const sizeFontSize = Math.max(9, Math.min(14, overlayWidth / 25));
+    ctx.font = `bold ${sizeFontSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('SIZE', overlayX + overlayWidth / 2, sizeControlY);
+    
+    const sizeButtonY = sizeControlY + 20;
+    const sizeButtonSize = Math.max(20, Math.min(30, overlayWidth / 15));
     const sizeControlCenterX = overlayX + overlayWidth / 2;
+    const buttonSpacing = Math.max(25, overlayWidth / 10);
     
     // Minus button
     ctx.fillStyle = '#666';
-    ctx.fillRect(sizeControlCenterX - 60, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.fillRect(sizeControlCenterX - buttonSpacing, sizeButtonY, sizeButtonSize, sizeButtonSize);
     ctx.strokeStyle = '#aaa';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(sizeControlCenterX - 60, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.lineWidth = 1;
+    ctx.strokeRect(sizeControlCenterX - buttonSpacing, sizeButtonY, sizeButtonSize, sizeButtonSize);
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
-    ctx.fillText('-', sizeControlCenterX - 60 + sizeButtonSize / 2, sizeButtonY + sizeButtonSize / 2);
+    ctx.fillText('-', sizeControlCenterX - buttonSpacing + sizeButtonSize / 2, sizeButtonY + sizeButtonSize / 2);
     
     // Size display
     ctx.fillStyle = 'white';
@@ -177,11 +180,11 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
     
     // Plus button
     ctx.fillStyle = '#666';
-    ctx.fillRect(sizeControlCenterX + 35, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.fillRect(sizeControlCenterX + buttonSpacing - sizeButtonSize, sizeButtonY, sizeButtonSize, sizeButtonSize);
     ctx.strokeStyle = '#aaa';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(sizeControlCenterX + 35, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.lineWidth = 1;
+    ctx.strokeRect(sizeControlCenterX + buttonSpacing - sizeButtonSize, sizeButtonY, sizeButtonSize, sizeButtonSize);
     ctx.fillStyle = 'white';
-    ctx.fillText('+', sizeControlCenterX + 35 + sizeButtonSize / 2, sizeButtonY + sizeButtonSize / 2);
+    ctx.fillText('+', sizeControlCenterX + buttonSpacing - sizeButtonSize + sizeButtonSize / 2, sizeButtonY + sizeButtonSize / 2);
   }
 }

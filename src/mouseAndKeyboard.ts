@@ -26,8 +26,8 @@ export function handleToolClick(
   if (!UiState.isOverlayOpen) return false;
 
   // Check overlay controls
-  const overlayWidth = Math.min(300, canvas.width * 0.8);
-  const overlayHeight = Math.min(400, canvas.height * 0.7);
+  const overlayWidth = Math.min(280, canvas.width * 0.85);
+  const overlayHeight = Math.min(350, canvas.height * 0.8);
   const overlayX = (canvas.width - overlayWidth) / 2;
   const overlayY = (canvas.height - overlayHeight) / 2;
   
@@ -39,14 +39,14 @@ export function handleToolClick(
   }
 
   // Tool buttons
-  const buttonMargin = 20;
-  const buttonStartY = overlayY + 60;
-  const buttonHeight = Math.max(30, overlayHeight / 15);
+  const buttonMargin = Math.max(12, overlayWidth / 20);
+  const buttonStartY = overlayY + 45;
+  const buttonHeight = Math.max(25, Math.min(35, overlayHeight / 18));
   const buttonX = overlayX + buttonMargin;
   const buttonWidth = overlayWidth - buttonMargin * 2;
 
   for (let i = 0; i < tools.length; i++) {
-    const buttonY = buttonStartY + i * (buttonHeight + 10);
+    const buttonY = buttonStartY + i * (buttonHeight + 8);
     
     if (
       x >= buttonX &&
@@ -59,16 +59,17 @@ export function handleToolClick(
     }
   }
 
-  // Brush size controls
-  const sizeControlY = buttonStartY + tools.length * (buttonHeight + 10) + 30;
-  const sizeButtonY = sizeControlY + 30;
-  const sizeButtonSize = Math.max(25, overlayWidth / 12);
+  // Brush size controls - always handle them
+  const sizeControlY = buttonStartY + tools.length * (buttonHeight + 8) + 15;
+  const sizeButtonY = sizeControlY + 20;
+  const sizeButtonSize = Math.max(20, Math.min(30, overlayWidth / 15));
   const sizeControlCenterX = overlayX + overlayWidth / 2;
+  const buttonSpacing = Math.max(25, overlayWidth / 10);
 
   // Minus button
   if (
-    x >= sizeControlCenterX - 60 &&
-    x <= sizeControlCenterX - 60 + sizeButtonSize &&
+    x >= sizeControlCenterX - buttonSpacing &&
+    x <= sizeControlCenterX - buttonSpacing + sizeButtonSize &&
     y >= sizeButtonY &&
     y <= sizeButtonY + sizeButtonSize
   ) {
@@ -78,8 +79,8 @@ export function handleToolClick(
 
   // Plus button
   if (
-    x >= sizeControlCenterX + 35 &&
-    x <= sizeControlCenterX + 35 + sizeButtonSize &&
+    x >= sizeControlCenterX + buttonSpacing - sizeButtonSize &&
+    x <= sizeControlCenterX + buttonSpacing - sizeButtonSize + sizeButtonSize &&
     y >= sizeButtonY &&
     y <= sizeButtonY + sizeButtonSize
   ) {
@@ -99,8 +100,8 @@ export function handleGameClick(
 ): boolean {
   // If overlay is open and click is in overlay area, don't place particles
   if (UiState.isOverlayOpen) {
-    const overlayWidth = Math.min(300, canvas.width * 0.8);
-    const overlayHeight = Math.min(400, canvas.height * 0.7);
+    const overlayWidth = Math.min(280, canvas.width * 0.85);
+    const overlayHeight = Math.min(350, canvas.height * 0.8);
     const overlayX = (canvas.width - overlayWidth) / 2;
     const overlayY = (canvas.height - overlayHeight) / 2;
     
