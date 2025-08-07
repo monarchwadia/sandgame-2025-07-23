@@ -8,6 +8,7 @@ import { FIRE_IDX } from './particles/fire.particle';
 import { LIGHTNING_IDX } from './particles/lightning.particle';
 import { WATER_IDX } from './particles/water.particle';
 import { HUMAN_IDX } from './particles/human.particle';
+import { SAND_COLOR, FIRE_COLOR, LIGHTNING_COLOR, WATER_COLOR, HUMAN_COLOR } from './palette';
 
 // create offscreen canvas for rendering
 let imageData: ImageData;
@@ -17,14 +18,19 @@ let selectedTool = SAND_IDX;
 interface ToolDef {
   idx: number;
   name: string;
+  color: string;
+}
+
+function rgbaToCss([r, g, b]: [number, number, number, number]): string {
+  return `rgb(${r},${g},${b})`;
 }
 
 const tools: ToolDef[] = [
-  { idx: SAND_IDX, name: 'SAND' },
-  { idx: FIRE_IDX, name: 'FIRE' },
-  { idx: LIGHTNING_IDX, name: 'BOLT' },
-  { idx: WATER_IDX, name: 'WATER' },
-  { idx: HUMAN_IDX, name: 'HUMAN' },
+  { idx: SAND_IDX, name: 'SAND', color: rgbaToCss(SAND_COLOR) },
+  { idx: FIRE_IDX, name: 'FIRE', color: rgbaToCss(FIRE_COLOR) },
+  { idx: LIGHTNING_IDX, name: 'BOLT', color: rgbaToCss(LIGHTNING_COLOR) },
+  { idx: WATER_IDX, name: 'WATER', color: rgbaToCss(WATER_COLOR) },
+  { idx: HUMAN_IDX, name: 'HUMAN', color: rgbaToCss(HUMAN_COLOR) },
 ];
 
 export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gameState: GameState): void {
@@ -96,45 +102,37 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
   ctx.lineWidth = 1;
   ctx.strokeRect(0, panelY, canvas.width, ctrlPanelHeight);
   
-  // 8-bit style control buttons
-  const buttonSize = 40; // smaller, square
-  const buttonSpacing = 12; // compact spacing
+  // Text-only control buttons
+  const fontSize = 18;
+  const buttonSpacing = 24;
   const numButtons = tools.length;
   const startX = 16; // left margin from panel
-  const buttonY = panelY + 16; // top margin from panel
+  const buttonY = panelY + 24; // top margin from panel
+
+  ctx.font = `bold ${fontSize}px monospace`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
 
   for (let i = 0; i < numButtons; i++) {
-    const buttonX = startX + i * (buttonSize + buttonSpacing);
-    const isSelected = tools[i].idx === selectedTool;
+    const tool = tools[i];
+    const isSelected = tool.idx === selectedTool;
+    const textX = startX;
+    const textY = buttonY + i * buttonSpacing;
 
-    // 8-bit pixel border
-    ctx.save();
-    ctx.imageSmoothingEnabled = false;
-    // Outer border (black)
-    ctx.fillStyle = '#222';
-    ctx.fillRect(buttonX - 2, buttonY - 2, buttonSize + 4, buttonSize + 4);
-    // Inner border (light)
-    ctx.fillStyle = isSelected ? '#6cf' : '#aaa';
-    ctx.fillRect(buttonX - 1, buttonY - 1, buttonSize + 2, buttonSize + 2);
-    // Button face
-    ctx.fillStyle = isSelected ? '#bdf' : '#eee';
-    ctx.fillRect(buttonX, buttonY, buttonSize, buttonSize);
-    // Simple highlight (top left)
-    ctx.fillStyle = isSelected ? '#fff' : '#fff8';
-    ctx.fillRect(buttonX, buttonY, buttonSize, 6);
-    ctx.fillRect(buttonX, buttonY, 6, buttonSize);
-    // Simple shadow (bottom right)
-    ctx.fillStyle = isSelected ? '#89a' : '#ccc';
-    ctx.fillRect(buttonX, buttonY + buttonSize - 6, buttonSize, 6);
-    ctx.fillRect(buttonX + buttonSize - 6, buttonY, 6, buttonSize);
-    ctx.restore();
+    // Draw text label in palette color
+    ctx.fillStyle = tool.color;
+    ctx.fillText(tool.name, textX, textY);
 
-    // 8-bit style label (pixel font look)
-    ctx.fillStyle = isSelected ? '#222' : '#333';
-    ctx.font = 'bold 11px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(tools[i].name, buttonX + buttonSize / 2, buttonY + buttonSize / 2);
+    // Draw underline or box if selected
+    if (isSelected) {
+      const textWidth = ctx.measureText(tool.name).width;
+      ctx.strokeStyle = tool.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(textX, textY + fontSize + 2);
+      ctx.lineTo(textX + textWidth, textY + fontSize + 2);
+      ctx.stroke();
+    }
   }
 }
 
@@ -146,17 +144,22 @@ export function handleToolClick(canvas: HTMLCanvasElement, x: number, y: number)
   // Check if click is in control panel
   if (y < panelY) return false;
   
-  const buttonSize = 40;
-  const buttonSpacing = 12;
+  const fontSize = 18;
+  const buttonSpacing = 24;
   const numButtons = tools.length;
   const startX = 16;
-  const buttonY = panelY + 16;
+  const buttonY = panelY + 24;
 
-  // Check each button
+  // Check each button (text row)
   for (let i = 0; i < numButtons; i++) {
-    const buttonX = startX + i * (buttonSize + buttonSpacing);
-    if (x >= buttonX && x <= buttonX + buttonSize && 
-        y >= buttonY && y <= buttonY + buttonSize) {
+    const textX = startX;
+    const textY = buttonY + i * buttonSpacing;
+    const textWidth = 80; // generous hitbox width
+    const textHeight = fontSize + 6;
+    if (
+      x >= textX && x <= textX + textWidth &&
+      y >= textY && y <= textY + textHeight
+    ) {
       selectedTool = tools[i].idx;
       return true; // Click handled
     }
