@@ -8,17 +8,12 @@ let imageData: ImageData;
 
 export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gameState: GameState): void {
   // Setup mouse listeners for continuous placement
-  // Define control areas and game area layout
-  const ctrlPanelHeight = 200; // Height of bottom control panel
+  // Define control areas and game area layout - overlay takes no permanent space
+  const gameAreaSize = Math.min(canvas.width, canvas.height);
   
-  // Calculate square game area in top portion, leaving space for control panel
-  const availableWidth = canvas.width;
-  const availableHeight = canvas.height - ctrlPanelHeight;
-  const gameAreaSize = Math.min(availableWidth, availableHeight);
-  
-  // Center the game area in the top portion
+  // Center the game area (now full square since overlay doesn't take permanent space)
   const gameOffsetX = (canvas.width - gameAreaSize) / 2;
-  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
+  const gameOffsetY = (canvas.height - gameAreaSize) / 2;
   
   // Create image data for the game area only
   if (!imageData || imageData.width !== gameAreaSize || imageData.height !== gameAreaSize) {
@@ -64,72 +59,129 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
   // Put the game image data to the centered position
   ctx.putImageData(imageData, gameOffsetX, gameOffsetY);
 
-  // Draw control panel at bottom
-  const panelY = canvas.height - ctrlPanelHeight;
+  // Draw toggle button in top-left corner
+  const toggleButtonSize = 40;
+  const toggleMargin = 16;
   
-  // Panel background
-  ctx.fillStyle = 'rgba(40, 40, 40, 0.9)';
-  ctx.fillRect(0, panelY, canvas.width, ctrlPanelHeight);
+  // Toggle button background
+  ctx.fillStyle = UiState.isOverlayOpen ? 'rgba(60, 60, 60, 0.9)' : 'rgba(40, 40, 40, 0.9)';
+  ctx.fillRect(toggleMargin, toggleMargin, toggleButtonSize, toggleButtonSize);
   
-  // Panel border
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(0, panelY, canvas.width, ctrlPanelHeight);
-  
-  // Text-only control buttons
-  const fontSize = 18;
-  const buttonSpacing = 24;
-  const numButtons = tools.length;
-  const startX = 16; // left margin from panel
-  const buttonY = panelY + 24; // top margin from panel
-
-  ctx.font = `bold ${fontSize}px monospace`;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
-
-  // Left side controls in black space - Size control
-  const leftControlX = Math.max(16, gameOffsetX - 120); // Position in left black space
-  const leftControlY = gameOffsetY + 50; // Vertical position in game area
-  
-  ctx.fillStyle = 'white';
-  ctx.fillText('SIZE', leftControlX, leftControlY);
-  
-  // Minus button
-  ctx.fillStyle = '#aaa';
-  ctx.strokeStyle = '#aaa';
+  // Toggle button border
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
   ctx.lineWidth = 2;
-  ctx.strokeRect(leftControlX, leftControlY + 30, 20, 20);
-  ctx.fillText('-', leftControlX + 6, leftControlY + 34);
+  ctx.strokeRect(toggleMargin, toggleMargin, toggleButtonSize, toggleButtonSize);
   
-  // Size display
-  ctx.fillStyle = 'white';
-  ctx.fillText(UiState.brushSize.toString(), leftControlX + 30, leftControlY + 34);
-  
-  // Plus button
-  ctx.fillStyle = '#aaa';
-  ctx.strokeStyle = '#aaa';
-  ctx.strokeRect(leftControlX + 50, leftControlY + 30, 20, 20);
-  ctx.fillText('+', leftControlX + 56, leftControlY + 34);
+  // Toggle button icon (hamburger menu or X)
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 2;
+  if (UiState.isOverlayOpen) {
+    // Draw X
+    ctx.beginPath();
+    ctx.moveTo(toggleMargin + 12, toggleMargin + 12);
+    ctx.lineTo(toggleMargin + 28, toggleMargin + 28);
+    ctx.moveTo(toggleMargin + 28, toggleMargin + 12);
+    ctx.lineTo(toggleMargin + 12, toggleMargin + 28);
+    ctx.stroke();
+  } else {
+    // Draw hamburger menu
+    ctx.beginPath();
+    ctx.moveTo(toggleMargin + 10, toggleMargin + 14);
+    ctx.lineTo(toggleMargin + 30, toggleMargin + 14);
+    ctx.moveTo(toggleMargin + 10, toggleMargin + 20);
+    ctx.lineTo(toggleMargin + 30, toggleMargin + 20);
+    ctx.moveTo(toggleMargin + 10, toggleMargin + 26);
+    ctx.lineTo(toggleMargin + 30, toggleMargin + 26);
+    ctx.stroke();
+  }
 
-  for (let i = 0; i < numButtons; i++) {
-    const tool = tools[i];
-    const isSelected = tool.idx === UiState.selectedTool;
-    const textX = startX;
-    const textY = buttonY + i * buttonSpacing;
-
-    // Draw text label in palette color
-    ctx.fillStyle = tool.color;
-    ctx.fillText(tool.name, textX, textY);
-
-    // Draw underline or box if selected
-    if (isSelected) {
-      const textWidth = ctx.measureText(tool.name).width;
-      ctx.strokeStyle = tool.color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(textX, textY + fontSize + 2);
-      ctx.lineTo(textX + textWidth, textY + fontSize + 2);
-      ctx.stroke();
+  // Draw overlay panel if open
+  if (UiState.isOverlayOpen) {
+    // Overlay dimensions and position
+    const overlayWidth = Math.min(300, canvas.width * 0.8);
+    const overlayHeight = Math.min(400, canvas.height * 0.7);
+    const overlayX = (canvas.width - overlayWidth) / 2;
+    const overlayY = (canvas.height - overlayHeight) / 2;
+    
+    // Overlay background
+    ctx.fillStyle = 'rgba(30, 30, 30, 0.95)';
+    ctx.fillRect(overlayX, overlayY, overlayWidth, overlayHeight);
+    
+    // Overlay border
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(overlayX, overlayY, overlayWidth, overlayHeight);
+    
+    // Title
+    const titleFontSize = Math.max(16, Math.min(20, overlayWidth / 15));
+    ctx.font = `bold ${titleFontSize}px monospace`;
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('PARTICLE TOOLS', overlayX + overlayWidth / 2, overlayY + 30);
+    
+    // Tool buttons - responsive layout
+    const buttonMargin = 20;
+    const buttonStartY = overlayY + 60;
+    const buttonHeight = Math.max(30, overlayHeight / 15);
+    const buttonFontSize = Math.max(12, Math.min(16, overlayWidth / 20));
+    
+    ctx.font = `bold ${buttonFontSize}px monospace`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    
+    for (let i = 0; i < tools.length; i++) {
+      const tool = tools[i];
+      const isSelected = tool.idx === UiState.selectedTool;
+      const buttonY = buttonStartY + i * (buttonHeight + 10);
+      const buttonX = overlayX + buttonMargin;
+      const buttonWidth = overlayWidth - buttonMargin * 2;
+      
+      // Button background
+      ctx.fillStyle = isSelected ? 'rgba(80, 80, 80, 0.8)' : 'rgba(50, 50, 50, 0.6)';
+      ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+      
+      // Button border
+      ctx.strokeStyle = isSelected ? tool.color : 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = isSelected ? 3 : 1;
+      ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+      
+      // Button text
+      ctx.fillStyle = tool.color;
+      ctx.fillText(tool.name, buttonX + 15, buttonY + buttonHeight / 2);
     }
+    
+    // Brush size controls in overlay
+    const sizeControlY = buttonStartY + tools.length * (buttonHeight + 10) + 30;
+    ctx.fillStyle = 'white';
+    ctx.font = `bold ${buttonFontSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('BRUSH SIZE', overlayX + overlayWidth / 2, sizeControlY);
+    
+    const sizeButtonY = sizeControlY + 30;
+    const sizeButtonSize = Math.max(25, overlayWidth / 12);
+    const sizeControlCenterX = overlayX + overlayWidth / 2;
+    
+    // Minus button
+    ctx.fillStyle = '#666';
+    ctx.fillRect(sizeControlCenterX - 60, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.strokeStyle = '#aaa';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(sizeControlCenterX - 60, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('-', sizeControlCenterX - 60 + sizeButtonSize / 2, sizeButtonY + sizeButtonSize / 2);
+    
+    // Size display
+    ctx.fillStyle = 'white';
+    ctx.fillText(UiState.brushSize.toString(), sizeControlCenterX, sizeButtonY + sizeButtonSize / 2);
+    
+    // Plus button
+    ctx.fillStyle = '#666';
+    ctx.fillRect(sizeControlCenterX + 35, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.strokeStyle = '#aaa';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(sizeControlCenterX + 35, sizeButtonY, sizeButtonSize, sizeButtonSize);
+    ctx.fillStyle = 'white';
+    ctx.fillText('+', sizeControlCenterX + 35 + sizeButtonSize / 2, sizeButtonY + sizeButtonSize / 2);
   }
 }

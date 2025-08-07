@@ -10,4 +10,5 @@ export const UiState = {
     selectedTool: SAND_IDX as number,
     brushSize: 1, // Default brush size
     isMouseDown: false, // Track mouse down state
+    isOverlayOpen: false, // Control panel overlay state
 }

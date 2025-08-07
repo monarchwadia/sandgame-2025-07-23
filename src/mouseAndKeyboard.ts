@@ -8,23 +8,69 @@ export function handleToolClick(
   x: number,
   y: number
 ): boolean {
-  const ctrlPanelHeight = 200;
-  const panelY = canvas.height - ctrlPanelHeight;
+  // Check toggle button (top-left)
+  const toggleButtonSize = 40;
+  const toggleMargin = 16;
+  
+  if (
+    x >= toggleMargin &&
+    x <= toggleMargin + toggleButtonSize &&
+    y >= toggleMargin &&
+    y <= toggleMargin + toggleButtonSize
+  ) {
+    UiState.isOverlayOpen = !UiState.isOverlayOpen;
+    return true;
+  }
 
-  // Check size controls in left black space (these are NOT in the control panel)
-  const availableHeight = canvas.height - ctrlPanelHeight;
-  const gameAreaSize = Math.min(canvas.width, availableHeight);
-  const gameOffsetX = (canvas.width - gameAreaSize) / 2;
-  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
-  const leftControlX = Math.max(16, gameOffsetX - 120);
-  const leftControlY = gameOffsetY + 50;
+  // If overlay is not open, no other controls to handle
+  if (!UiState.isOverlayOpen) return false;
+
+  // Check overlay controls
+  const overlayWidth = Math.min(300, canvas.width * 0.8);
+  const overlayHeight = Math.min(400, canvas.height * 0.7);
+  const overlayX = (canvas.width - overlayWidth) / 2;
+  const overlayY = (canvas.height - overlayHeight) / 2;
+  
+  // Check if click is outside overlay - close it
+  if (x < overlayX || x > overlayX + overlayWidth || 
+      y < overlayY || y > overlayY + overlayHeight) {
+    UiState.isOverlayOpen = false;
+    return true;
+  }
+
+  // Tool buttons
+  const buttonMargin = 20;
+  const buttonStartY = overlayY + 60;
+  const buttonHeight = Math.max(30, overlayHeight / 15);
+  const buttonX = overlayX + buttonMargin;
+  const buttonWidth = overlayWidth - buttonMargin * 2;
+
+  for (let i = 0; i < tools.length; i++) {
+    const buttonY = buttonStartY + i * (buttonHeight + 10);
+    
+    if (
+      x >= buttonX &&
+      x <= buttonX + buttonWidth &&
+      y >= buttonY &&
+      y <= buttonY + buttonHeight
+    ) {
+      UiState.selectedTool = tools[i].idx;
+      return true;
+    }
+  }
+
+  // Brush size controls
+  const sizeControlY = buttonStartY + tools.length * (buttonHeight + 10) + 30;
+  const sizeButtonY = sizeControlY + 30;
+  const sizeButtonSize = Math.max(25, overlayWidth / 12);
+  const sizeControlCenterX = overlayX + overlayWidth / 2;
 
   // Minus button
   if (
-    x >= leftControlX &&
-    x <= leftControlX + 20 &&
-    y >= leftControlY + 30 &&
-    y <= leftControlY + 50
+    x >= sizeControlCenterX - 60 &&
+    x <= sizeControlCenterX - 60 + sizeButtonSize &&
+    y >= sizeButtonY &&
+    y <= sizeButtonY + sizeButtonSize
   ) {
     if (UiState.brushSize > 1) UiState.brushSize--;
     return true;
@@ -32,39 +78,13 @@ export function handleToolClick(
 
   // Plus button
   if (
-    x >= leftControlX + 50 &&
-    x <= leftControlX + 70 &&
-    y >= leftControlY + 30 &&
-    y <= leftControlY + 50
+    x >= sizeControlCenterX + 35 &&
+    x <= sizeControlCenterX + 35 + sizeButtonSize &&
+    y >= sizeButtonY &&
+    y <= sizeButtonY + sizeButtonSize
   ) {
     if (UiState.brushSize < 10) UiState.brushSize++;
     return true;
-  }
-
-  // Check if click is in control panel
-  if (y < panelY) return false;
-
-  const fontSize = 18;
-  const buttonSpacing = 24;
-  const numButtons = tools.length;
-  const startX = 16;
-  const buttonY = panelY + 24;
-
-  // Check each button (text row)
-  for (let i = 0; i < numButtons; i++) {
-    const textX = startX;
-    const textY = buttonY + i * buttonSpacing;
-    const textWidth = 80; // generous hitbox width
-    const textHeight = fontSize + 6;
-    if (
-      x >= textX &&
-      x <= textX + textWidth &&
-      y >= textY &&
-      y <= textY + textHeight
-    ) {
-      UiState.selectedTool = tools[i].idx;
-      return true; // Click handled
-    }
   }
 
   return false; // Click not handled
@@ -77,18 +97,23 @@ export function handleGameClick(
   x: number,
   y: number
 ): boolean {
-  const ctrlPanelHeight = 200;
-  const panelY = canvas.height - ctrlPanelHeight;
+  // If overlay is open and click is in overlay area, don't place particles
+  if (UiState.isOverlayOpen) {
+    const overlayWidth = Math.min(300, canvas.width * 0.8);
+    const overlayHeight = Math.min(400, canvas.height * 0.7);
+    const overlayX = (canvas.width - overlayWidth) / 2;
+    const overlayY = (canvas.height - overlayHeight) / 2;
+    
+    if (x >= overlayX && x <= overlayX + overlayWidth && 
+        y >= overlayY && y <= overlayY + overlayHeight) {
+      return false; // Don't place particles in overlay area
+    }
+  }
 
-  // Check if click is in game area
-  if (y >= panelY) return false;
-
-  // Calculate game area bounds (same as in renderBoard)
-  const availableWidth = canvas.width;
-  const availableHeight = canvas.height - ctrlPanelHeight;
-  const gameAreaSize = Math.min(availableWidth, availableHeight);
+  // Calculate game area bounds (now full square since no bottom panel)
+  const gameAreaSize = Math.min(canvas.width, canvas.height);
   const gameOffsetX = (canvas.width - gameAreaSize) / 2;
-  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
+  const gameOffsetY = (canvas.height - gameAreaSize) / 2;
 
   // Check if click is within game area
   if (
