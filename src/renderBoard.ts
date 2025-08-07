@@ -4,14 +4,6 @@ import { particlesRegistry } from './particles/particlesRegistry';
 import { UiState } from './UIState';
 import { tools } from './tools';
 
-
-// --- Mouse hold support for continuous placement ---
-
-// src/renderBoard.ts
-// No-op render function for sand game board
-
-
-// create offscreen canvas for rendering
 let imageData: ImageData;
 
 export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gameState: GameState): void {
