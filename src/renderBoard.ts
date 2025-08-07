@@ -1,3 +1,65 @@
+// --- Mouse hold support for continuous placement ---
+let isMouseDown = false;
+let lastCanvas: HTMLCanvasElement | null = null;
+let lastGameState: GameState | null = null;
+let holdInterval: number | null = null;
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+function onMouseDown(e: MouseEvent) {
+  if (!lastCanvas || !lastGameState) return;
+  const rect = lastCanvas.getBoundingClientRect();
+  // Account for canvas scaling by converting from display coordinates to canvas coordinates
+  const scaleX = lastCanvas.width / rect.width;
+  const scaleY = lastCanvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  lastMouseX = x;
+  lastMouseY = y;
+  isMouseDown = true;
+  handleGameClick(lastCanvas, lastGameState, x, y);
+  
+  // Start continuous placement interval for click and hold
+  if (holdInterval) clearInterval(holdInterval);
+  holdInterval = setInterval(() => {
+    if (isMouseDown && lastCanvas && lastGameState) {
+      handleGameClick(lastCanvas, lastGameState, lastMouseX, lastMouseY);
+    }
+  }, 50); // Place particles every 50ms while holding
+}
+
+function onMouseUp() {
+  isMouseDown = false;
+  if (holdInterval) {
+    clearInterval(holdInterval);
+    holdInterval = null;
+  }
+}
+
+function onMouseMove(e: MouseEvent) {
+  if (!isMouseDown || !lastCanvas || !lastGameState) return;
+  const rect = lastCanvas.getBoundingClientRect();
+  // Account for canvas scaling by converting from display coordinates to canvas coordinates
+  const scaleX = lastCanvas.width / rect.width;
+  const scaleY = lastCanvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  lastMouseX = x;
+  lastMouseY = y;
+  handleGameClick(lastCanvas, lastGameState, x, y);
+}
+
+function setupContinuousPlacement(canvas: HTMLCanvasElement, gameState: GameState) {
+  lastCanvas = canvas;
+  lastGameState = gameState;
+  // Only add listeners once
+  if (!(canvas as any)._continuousPlacementSetup) {
+    canvas.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    canvas.addEventListener('mousemove', onMouseMove);
+    (canvas as any)._continuousPlacementSetup = true;
+  }
+}
 // src/renderBoard.ts
 // No-op render function for sand game board
 
@@ -34,6 +96,8 @@ const tools: ToolDef[] = [
 ];
 
 export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gameState: GameState): void {
+  // Setup mouse listeners for continuous placement
+  setupContinuousPlacement(canvas, gameState);
   // Define control areas and game area layout
   const ctrlPanelHeight = 200; // Height of bottom control panel
   
