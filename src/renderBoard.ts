@@ -1,27 +1,139 @@
+
+import type { GameState } from './GameState';
+import { particlesRegistry } from './particles/particlesRegistry';
 import { UiState } from './UIState';
+import { tools } from './tools';
+
 // --- Mouse hold support for continuous placement ---
 
-let lastCanvas: HTMLCanvasElement | null = null;
-let lastGameState: GameState | null = null;
+
+// Function to handle tool selection clicks
+export function handleToolClick(canvas: HTMLCanvasElement, x: number, y: number): boolean {
+  const ctrlPanelHeight = 200;
+  const panelY = canvas.height - ctrlPanelHeight;
+  
+  // Check size controls in left black space (these are NOT in the control panel)
+  const availableHeight = canvas.height - ctrlPanelHeight;
+  const gameAreaSize = Math.min(canvas.width, availableHeight);
+  const gameOffsetX = (canvas.width - gameAreaSize) / 2;
+  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
+  const leftControlX = Math.max(16, gameOffsetX - 120);
+  const leftControlY = gameOffsetY + 50;
+  
+  // Minus button
+  if (x >= leftControlX && x <= leftControlX + 20 && 
+      y >= leftControlY + 30 && y <= leftControlY + 50) {
+    if (UiState.brushSize > 1) UiState.brushSize--;
+    return true;
+  }
+  
+  // Plus button  
+  if (x >= leftControlX + 50 && x <= leftControlX + 70 && 
+      y >= leftControlY + 30 && y <= leftControlY + 50) {
+    if (UiState.brushSize < 10) UiState.brushSize++;
+    return true;
+  }
+  
+  // Check if click is in control panel
+  if (y < panelY) return false;
+  
+  const fontSize = 18;
+  const buttonSpacing = 24;
+  const numButtons = tools.length;
+  const startX = 16;
+  const buttonY = panelY + 24;
+
+  // Check each button (text row)
+  for (let i = 0; i < numButtons; i++) {
+    const textX = startX;
+    const textY = buttonY + i * buttonSpacing;
+    const textWidth = 80; // generous hitbox width
+    const textHeight = fontSize + 6;
+    if (
+      x >= textX && x <= textX + textWidth &&
+      y >= textY && y <= textY + textHeight
+    ) {
+      UiState.selectedTool = tools[i].idx;
+      return true; // Click handled
+    }
+  }
+  
+  return false; // Click not handled
+}
+
+// Function to handle particle placement clicks
+export function handleGameClick(canvas: HTMLCanvasElement, gameState: GameState, x: number, y: number): boolean {
+  const ctrlPanelHeight = 200;
+  const panelY = canvas.height - ctrlPanelHeight;
+  
+  // Check if click is in game area
+  if (y >= panelY) return false;
+  
+  // Calculate game area bounds (same as in renderBoard)
+  const availableWidth = canvas.width;
+  const availableHeight = canvas.height - ctrlPanelHeight;
+  const gameAreaSize = Math.min(availableWidth, availableHeight);
+  const gameOffsetX = (canvas.width - gameAreaSize) / 2;
+  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
+  
+  // Check if click is within game area
+  if (x < gameOffsetX || x > gameOffsetX + gameAreaSize ||
+      y < gameOffsetY || y > gameOffsetY + gameAreaSize) {
+    return false;
+  }
+  
+  // Convert canvas coordinates to grid coordinates
+  const relativeX = x - gameOffsetX;
+  const relativeY = y - gameOffsetY;
+  
+  // Calculate actual cell size based on game area, not constants
+  const actualCellWidth = gameAreaSize / gameState.width;
+  const actualCellHeight = gameAreaSize / gameState.height;
+  
+  const gridX = Math.floor(relativeX / actualCellWidth);
+  const gridY = Math.floor(relativeY / actualCellHeight);
+  
+  // Ensure coordinates are within bounds
+  if (gridX >= 0 && gridX < gameState.width && gridY >= 0 && gridY < gameState.height) {
+    // Apply brush with radius
+    for (let dy = -UiState.brushSize + 1; dy < UiState.brushSize; dy++) {
+      for (let dx = -UiState.brushSize + 1; dx < UiState.brushSize; dx++) {
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < UiState.brushSize) {
+          const targetX = gridX + dx;
+          const targetY = gridY + dy;
+          if (targetX >= 0 && targetX < gameState.width && 
+              targetY >= 0 && targetY < gameState.height) {
+            const index = targetY * gameState.width + targetX;
+            gameState.grid[index] = UiState.selectedTool;
+          }
+        }
+      }
+    }
+    return true; // Click handled
+  }
+  
+  return false; // Click not handled
+}
 
 function onMouseDown(e: MouseEvent) {
-  if (!lastCanvas || !lastGameState) return;
-  const rect = lastCanvas.getBoundingClientRect();
+  if (!UiState.lastCanvas || !UiState.lastGameState) return;
+  const rect = UiState.lastCanvas.getBoundingClientRect();
   // Account for canvas scaling by converting from display coordinates to canvas coordinates
-  const scaleX = lastCanvas.width / rect.width;
-  const scaleY = lastCanvas.height / rect.height;
+  const scaleX = UiState.lastCanvas.width / rect.width;
+  const scaleY = UiState.lastCanvas.height / rect.height;
   const x = (e.clientX - rect.left) * scaleX;
   const y = (e.clientY - rect.top) * scaleY;
   UiState.lastMouseX = x;
   UiState.lastMouseY = y;
   UiState.isMouseDown = true;
-  handleGameClick(lastCanvas, lastGameState, x, y);
+  handleGameClick(UiState.lastCanvas, UiState.lastGameState, x, y);
   
   // Start continuous placement interval for click and hold
   if (UiState.holdInterval) clearInterval(UiState.holdInterval);
   UiState.holdInterval = setInterval(() => {
-    if (UiState.isMouseDown && lastCanvas && lastGameState) {
-      handleGameClick(lastCanvas, lastGameState, UiState.lastMouseX, UiState.lastMouseY);
+    if (UiState.isMouseDown && UiState.lastCanvas && UiState.lastGameState) {
+      handleGameClick(UiState.lastCanvas, UiState.lastGameState, UiState.lastMouseX, UiState.lastMouseY);
     }
   }, 50); // Place particles every 50ms while holding
 }
@@ -35,21 +147,21 @@ function onMouseUp() {
 }
 
 function onMouseMove(e: MouseEvent) {
-  if (!UiState.isMouseDown || !lastCanvas || !lastGameState) return;
-  const rect = lastCanvas.getBoundingClientRect();
+  if (!UiState.isMouseDown || !UiState.lastCanvas || !UiState.lastGameState) return;
+  const rect = UiState.lastCanvas.getBoundingClientRect();
   // Account for canvas scaling by converting from display coordinates to canvas coordinates
-  const scaleX = lastCanvas.width / rect.width;
-  const scaleY = lastCanvas.height / rect.height;
+  const scaleX = UiState.lastCanvas.width / rect.width;
+  const scaleY = UiState.lastCanvas.height / rect.height;
   const x = (e.clientX - rect.left) * scaleX;
   const y = (e.clientY - rect.top) * scaleY;
   UiState.lastMouseX = x;
   UiState.lastMouseY = y;
-  handleGameClick(lastCanvas, lastGameState, x, y);
+  handleGameClick(UiState.lastCanvas, UiState.lastGameState, x, y);
 }
 
 function setupContinuousPlacement(canvas: HTMLCanvasElement, gameState: GameState) {
-  lastCanvas = canvas;
-  lastGameState = gameState;
+  UiState.lastCanvas = canvas;
+  UiState.lastGameState = gameState;
   // Only add listeners once
   if (!(canvas as any)._continuousPlacementSetup) {
     canvas.addEventListener('mousedown', onMouseDown);
@@ -61,38 +173,9 @@ function setupContinuousPlacement(canvas: HTMLCanvasElement, gameState: GameStat
 // src/renderBoard.ts
 // No-op render function for sand game board
 
-import type { GameState } from './GameState';
-import { particlesRegistry } from './particles/particlesRegistry';
-import { SAND_IDX } from './particles/sand.particle';
-import { FIRE_IDX } from './particles/fire.particle';
-import { LIGHTNING_IDX } from './particles/lightning.particle';
-import { WATER_IDX } from './particles/water.particle';
-import { HUMAN_IDX } from './particles/human.particle';
-import { SAND_COLOR, FIRE_COLOR, LIGHTNING_COLOR, WATER_COLOR, HUMAN_COLOR } from './palette';
 
 // create offscreen canvas for rendering
 let imageData: ImageData;
-
-// Tool selection state
-let selectedTool = SAND_IDX;
-let brushSize = 1; // Radius of the brush
-interface ToolDef {
-  idx: number;
-  name: string;
-  color: string;
-}
-
-function rgbaToCss([r, g, b]: [number, number, number, number]): string {
-  return `rgb(${r},${g},${b})`;
-}
-
-const tools: ToolDef[] = [
-  { idx: SAND_IDX, name: 'SAND', color: rgbaToCss(SAND_COLOR) },
-  { idx: FIRE_IDX, name: 'FIRE', color: rgbaToCss(FIRE_COLOR) },
-  { idx: LIGHTNING_IDX, name: 'BOLT', color: rgbaToCss(LIGHTNING_COLOR) },
-  { idx: WATER_IDX, name: 'WATER', color: rgbaToCss(WATER_COLOR) },
-  { idx: HUMAN_IDX, name: 'HUMAN', color: rgbaToCss(HUMAN_COLOR) },
-];
 
 export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gameState: GameState): void {
   // Setup mouse listeners for continuous placement
@@ -192,7 +275,7 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
   
   // Size display
   ctx.fillStyle = 'white';
-  ctx.fillText(brushSize.toString(), leftControlX + 30, leftControlY + 34);
+  ctx.fillText(UiState.brushSize.toString(), leftControlX + 30, leftControlY + 34);
   
   // Plus button
   ctx.fillStyle = '#aaa';
@@ -202,7 +285,7 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
 
   for (let i = 0; i < numButtons; i++) {
     const tool = tools[i];
-    const isSelected = tool.idx === selectedTool;
+    const isSelected = tool.idx === UiState.selectedTool;
     const textX = startX;
     const textY = buttonY + i * buttonSpacing;
 
@@ -221,123 +304,4 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
       ctx.stroke();
     }
   }
-}
-
-// Function to handle tool selection clicks
-export function handleToolClick(canvas: HTMLCanvasElement, x: number, y: number): boolean {
-  const ctrlPanelHeight = 200;
-  const panelY = canvas.height - ctrlPanelHeight;
-  
-  // Check size controls in left black space (these are NOT in the control panel)
-  const availableHeight = canvas.height - ctrlPanelHeight;
-  const gameAreaSize = Math.min(canvas.width, availableHeight);
-  const gameOffsetX = (canvas.width - gameAreaSize) / 2;
-  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
-  const leftControlX = Math.max(16, gameOffsetX - 120);
-  const leftControlY = gameOffsetY + 50;
-  
-  // Minus button
-  if (x >= leftControlX && x <= leftControlX + 20 && 
-      y >= leftControlY + 30 && y <= leftControlY + 50) {
-    if (brushSize > 1) brushSize--;
-    return true;
-  }
-  
-  // Plus button  
-  if (x >= leftControlX + 50 && x <= leftControlX + 70 && 
-      y >= leftControlY + 30 && y <= leftControlY + 50) {
-    if (brushSize < 10) brushSize++;
-    return true;
-  }
-  
-  // Check if click is in control panel
-  if (y < panelY) return false;
-  
-  const fontSize = 18;
-  const buttonSpacing = 24;
-  const numButtons = tools.length;
-  const startX = 16;
-  const buttonY = panelY + 24;
-
-  // Check each button (text row)
-  for (let i = 0; i < numButtons; i++) {
-    const textX = startX;
-    const textY = buttonY + i * buttonSpacing;
-    const textWidth = 80; // generous hitbox width
-    const textHeight = fontSize + 6;
-    if (
-      x >= textX && x <= textX + textWidth &&
-      y >= textY && y <= textY + textHeight
-    ) {
-      selectedTool = tools[i].idx;
-      return true; // Click handled
-    }
-  }
-  
-  return false; // Click not handled
-}
-
-// Function to handle particle placement clicks
-export function handleGameClick(canvas: HTMLCanvasElement, gameState: GameState, x: number, y: number): boolean {
-  const ctrlPanelHeight = 200;
-  const panelY = canvas.height - ctrlPanelHeight;
-  
-  // Check if click is in game area
-  if (y >= panelY) return false;
-  
-  // Calculate game area bounds (same as in renderBoard)
-  const availableWidth = canvas.width;
-  const availableHeight = canvas.height - ctrlPanelHeight;
-  const gameAreaSize = Math.min(availableWidth, availableHeight);
-  const gameOffsetX = (canvas.width - gameAreaSize) / 2;
-  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
-  
-  // Check if click is within game area
-  if (x < gameOffsetX || x > gameOffsetX + gameAreaSize ||
-      y < gameOffsetY || y > gameOffsetY + gameAreaSize) {
-    return false;
-  }
-  
-  // Convert canvas coordinates to grid coordinates
-  const relativeX = x - gameOffsetX;
-  const relativeY = y - gameOffsetY;
-  
-  // Calculate actual cell size based on game area, not constants
-  const actualCellWidth = gameAreaSize / gameState.width;
-  const actualCellHeight = gameAreaSize / gameState.height;
-  
-  const gridX = Math.floor(relativeX / actualCellWidth);
-  const gridY = Math.floor(relativeY / actualCellHeight);
-  
-  // Ensure coordinates are within bounds
-  if (gridX >= 0 && gridX < gameState.width && gridY >= 0 && gridY < gameState.height) {
-    // Apply brush with radius
-    for (let dy = -brushSize + 1; dy < brushSize; dy++) {
-      for (let dx = -brushSize + 1; dx < brushSize; dx++) {
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < brushSize) {
-          const targetX = gridX + dx;
-          const targetY = gridY + dy;
-          if (targetX >= 0 && targetX < gameState.width && 
-              targetY >= 0 && targetY < gameState.height) {
-            const index = targetY * gameState.width + targetX;
-            gameState.grid[index] = selectedTool;
-          }
-        }
-      }
-    }
-    return true; // Click handled
-  }
-  
-  return false; // Click not handled
-}
-
-// Function to get current selected tool
-export function getSelectedTool(): number {
-  return selectedTool;
-}
-
-// Function to get current brush size
-export function getBrushSize(): number {
-  return brushSize;
 }
