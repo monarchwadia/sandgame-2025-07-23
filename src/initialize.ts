@@ -10,7 +10,8 @@ import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
 import { maybeSpawnHumans } from './environment/maybeSpawnHumansProcess';
 import { getRandom } from './randomseed';
-import { handleToolClick, handleGameClick } from './renderBoard';
+import { setupMouseAndKeyboard } from './mouseAndKeyboard';
+
 
 let renderCounter = 0;
 
@@ -27,6 +28,7 @@ export function initialize(target: HTMLElement, gameState: GameState) {
   canvas.height = size;
   
   target.appendChild(canvas);
+  setupMouseAndKeyboard(canvas, gameState);
 
   for (let i = 0; i < gameState.grid.length; i++) {
     // initialize with random sand
@@ -45,38 +47,6 @@ export function initialize(target: HTMLElement, gameState: GameState) {
     alert('Canvas 2D context not supported');
     return;
   }
-
-  // Add click event listener for tool selection and particle placement
-  canvas.addEventListener('click', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    const x = (event.clientX - rect.left) * scaleX;
-    const y = (event.clientY - rect.top) * scaleY;
-    
-    // Try tool selection first, then game placement
-    if (!handleToolClick(canvas, x, y)) {
-      handleGameClick(canvas, gameState, x, y);
-    }
-  });
-
-  // Add touch event listener for mobile
-  canvas.addEventListener('touchstart', (event) => {
-    event.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    const touch = event.touches[0];
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    const x = (touch.clientX - rect.left) * scaleX;
-    const y = (touch.clientY - rect.top) * scaleY;
-    
-    // Try tool selection first, then game placement
-    if (!handleToolClick(canvas, x, y)) {
-      handleGameClick(canvas, gameState, x, y);
-    }
-  });
 
   let lastUpdate = performance.now();
   let accumulator = 0;
