@@ -14,8 +14,18 @@ let imageData: ImageData;
 
 // Tool selection state
 let selectedTool = SAND_IDX;
-const tools = [SAND_IDX, FIRE_IDX, LIGHTNING_IDX, WATER_IDX, HUMAN_IDX];
-const toolNames = ['SAND', 'FIRE', 'BOLT', 'WATER', 'HUMAN'];
+interface ToolDef {
+  idx: number;
+  name: string;
+}
+
+const tools: ToolDef[] = [
+  { idx: SAND_IDX, name: 'SAND' },
+  { idx: FIRE_IDX, name: 'FIRE' },
+  { idx: LIGHTNING_IDX, name: 'BOLT' },
+  { idx: WATER_IDX, name: 'WATER' },
+  { idx: HUMAN_IDX, name: 'HUMAN' },
+];
 
 export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gameState: GameState): void {
   // Define control areas and game area layout
@@ -86,32 +96,45 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
   ctx.lineWidth = 1;
   ctx.strokeRect(0, panelY, canvas.width, ctrlPanelHeight);
   
-  // Draw control buttons in the panel
-  const buttonSize = 100;
-  const buttonSpacing = 120;
-  const startX = (canvas.width - (buttonSpacing * 4)) / 2; // Center 5 buttons
-  const buttonY = panelY + (ctrlPanelHeight - buttonSize) / 2;
-  
-  // Draw 5 control buttons
-  for (let i = 0; i < 5; i++) {
-    const buttonX = startX + i * buttonSpacing;
-    const isSelected = tools[i] === selectedTool;
-    
-    // Button background - highlight if selected
-    ctx.fillStyle = isSelected ? 'rgba(100, 200, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)';
-    ctx.strokeStyle = isSelected ? 'rgba(0, 100, 200, 0.8)' : 'rgba(0, 0, 0, 0.6)';
-    ctx.lineWidth = isSelected ? 3 : 2;
-    
-    ctx.beginPath();
-    ctx.roundRect(buttonX, buttonY, buttonSize, buttonSize, 8);
-    ctx.fill();
-    ctx.stroke();
-    
-    // Button label
-    ctx.fillStyle = isSelected ? 'white' : 'black';
-    ctx.font = 'bold 14px Arial';
+  // 8-bit style control buttons
+  const buttonSize = 40; // smaller, square
+  const buttonSpacing = 12; // compact spacing
+  const numButtons = tools.length;
+  const startX = 16; // left margin from panel
+  const buttonY = panelY + 16; // top margin from panel
+
+  for (let i = 0; i < numButtons; i++) {
+    const buttonX = startX + i * (buttonSize + buttonSpacing);
+    const isSelected = tools[i].idx === selectedTool;
+
+    // 8-bit pixel border
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    // Outer border (black)
+    ctx.fillStyle = '#222';
+    ctx.fillRect(buttonX - 2, buttonY - 2, buttonSize + 4, buttonSize + 4);
+    // Inner border (light)
+    ctx.fillStyle = isSelected ? '#6cf' : '#aaa';
+    ctx.fillRect(buttonX - 1, buttonY - 1, buttonSize + 2, buttonSize + 2);
+    // Button face
+    ctx.fillStyle = isSelected ? '#bdf' : '#eee';
+    ctx.fillRect(buttonX, buttonY, buttonSize, buttonSize);
+    // Simple highlight (top left)
+    ctx.fillStyle = isSelected ? '#fff' : '#fff8';
+    ctx.fillRect(buttonX, buttonY, buttonSize, 6);
+    ctx.fillRect(buttonX, buttonY, 6, buttonSize);
+    // Simple shadow (bottom right)
+    ctx.fillStyle = isSelected ? '#89a' : '#ccc';
+    ctx.fillRect(buttonX, buttonY + buttonSize - 6, buttonSize, 6);
+    ctx.fillRect(buttonX + buttonSize - 6, buttonY, 6, buttonSize);
+    ctx.restore();
+
+    // 8-bit style label (pixel font look)
+    ctx.fillStyle = isSelected ? '#222' : '#333';
+    ctx.font = 'bold 11px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(toolNames[i], buttonX + buttonSize / 2, buttonY + buttonSize / 2 + 5);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(tools[i].name, buttonX + buttonSize / 2, buttonY + buttonSize / 2);
   }
 }
 
@@ -123,18 +146,18 @@ export function handleToolClick(canvas: HTMLCanvasElement, x: number, y: number)
   // Check if click is in control panel
   if (y < panelY) return false;
   
-  const buttonSize = 100;
-  const buttonSpacing = 120;
-  const startX = (canvas.width - (buttonSpacing * 4)) / 2;
-  const buttonY = panelY + (ctrlPanelHeight - buttonSize) / 2;
-  
+  const buttonSize = 40;
+  const buttonSpacing = 12;
+  const numButtons = tools.length;
+  const startX = 16;
+  const buttonY = panelY + 16;
+
   // Check each button
-  for (let i = 0; i < 5; i++) {
-    const buttonX = startX + i * buttonSpacing;
-    
+  for (let i = 0; i < numButtons; i++) {
+    const buttonX = startX + i * (buttonSize + buttonSpacing);
     if (x >= buttonX && x <= buttonX + buttonSize && 
         y >= buttonY && y <= buttonY + buttonSize) {
-      selectedTool = tools[i];
+      selectedTool = tools[i].idx;
       return true; // Click handled
     }
   }
