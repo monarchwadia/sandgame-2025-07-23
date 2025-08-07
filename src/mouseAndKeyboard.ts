@@ -178,6 +178,12 @@ function onMouseUp() {
   }
 }
 
+function preventContextMenu(e: MouseEvent) {
+  e.preventDefault()
+  e.stopPropagation()
+  return false;
+}
+
 function onMouseMove(e: MouseEvent) {
   if (!UiState.lastCanvas || !UiState.lastGameState)
     return;
@@ -215,9 +221,11 @@ function onClick(event: MouseEvent) {
 }
 
 function onTouchStart(event: TouchEvent) {
+  event.preventDefault();
+  event.stopPropagation();
   if (!UiState.lastCanvas || !UiState.lastGameState)
     return;
-  event.preventDefault();
+  UiState.isMouseDown = true; // Treat touch start as mouse down
   const rect = UiState.lastCanvas.getBoundingClientRect();
   const touch = event.touches[0];
   const scaleX = UiState.lastCanvas.width / rect.width;
@@ -225,10 +233,59 @@ function onTouchStart(event: TouchEvent) {
 
   const x = (touch.clientX - rect.left) * scaleX;
   const y = (touch.clientY - rect.top) * scaleY;
+  
+  // Update last position for the interval to use
+  UiState.lastMouseX = x;
+  UiState.lastMouseY = y;
 
   // Try tool selection first, then game placement
   if (!handleToolClick(UiState.lastCanvas, x, y)) {
     handleGameClick(UiState.lastCanvas, UiState.lastGameState, x, y);
+  }
+
+  // Start continuous placement interval for click and hold
+  if (UiState.holdInterval) clearInterval(UiState.holdInterval);
+  UiState.holdInterval = setInterval(() => {
+    if (UiState.lastCanvas && UiState.lastGameState) {
+      handleGameClick(
+        UiState.lastCanvas,
+        UiState.lastGameState,
+        UiState.lastMouseX,
+        UiState.lastMouseY
+      );
+    }
+  }, 1); // Place particles every 1ms while holding
+}
+
+function onTouchMove(event: TouchEvent) {
+  event.preventDefault();
+  event.stopPropagation();
+  if (!UiState.lastCanvas || !UiState.lastGameState) return;
+
+  if (!UiState.isMouseDown) return; // Only update position if touch is active
+
+  const rect = UiState.lastCanvas.getBoundingClientRect();
+  const touch = event.touches[0];
+  const scaleX = UiState.lastCanvas.width / rect.width;
+  const scaleY = UiState.lastCanvas.height / rect.height;
+  const x = (touch.clientX - rect.left) * scaleX;
+  const y = (touch.clientY - rect.top) * scaleY;
+  
+  // Update last position for the interval to use
+  UiState.lastMouseX = x;
+  UiState.lastMouseY = y;
+  
+  handleGameClick(UiState.lastCanvas, UiState.lastGameState, x, y);
+}
+
+function onTouchEnd(event: TouchEvent) {
+  // No-op for now, but could be used to clean up state if needed
+  event.preventDefault();
+  event.stopPropagation();
+  UiState.isMouseDown = false;
+  if (UiState.holdInterval) {
+    clearInterval(UiState.holdInterval);
+    UiState.holdInterval = null;
   }
 }
 
@@ -243,7 +300,10 @@ export function setupMouseAndKeyboard(
   // Only add listeners once
   canvas.addEventListener("click", onClick);
   canvas.addEventListener("touchstart", onTouchStart);
+  canvas.addEventListener("touchmove", onTouchMove);
+  canvas.addEventListener("touchend", onTouchEnd);
   canvas.addEventListener("mousedown", onMouseDown);
   window.addEventListener("mouseup", onMouseUp);
   canvas.addEventListener("mousemove", onMouseMove);
+  canvas.addEventListener("contextmenu", preventContextMenu);
 }
