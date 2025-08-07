@@ -77,6 +77,7 @@ let imageData: ImageData;
 
 // Tool selection state
 let selectedTool = SAND_IDX;
+let brushSize = 1; // Radius of the brush
 interface ToolDef {
   idx: number;
   name: string;
@@ -177,6 +178,30 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
 
+  // Left side controls in black space - Size control
+  const leftControlX = Math.max(16, gameOffsetX - 120); // Position in left black space
+  const leftControlY = gameOffsetY + 50; // Vertical position in game area
+  
+  ctx.fillStyle = 'white';
+  ctx.fillText('SIZE', leftControlX, leftControlY);
+  
+  // Minus button
+  ctx.fillStyle = '#aaa';
+  ctx.strokeStyle = '#aaa';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(leftControlX, leftControlY + 30, 20, 20);
+  ctx.fillText('-', leftControlX + 6, leftControlY + 34);
+  
+  // Size display
+  ctx.fillStyle = 'white';
+  ctx.fillText(brushSize.toString(), leftControlX + 30, leftControlY + 34);
+  
+  // Plus button
+  ctx.fillStyle = '#aaa';
+  ctx.strokeStyle = '#aaa';
+  ctx.strokeRect(leftControlX + 50, leftControlY + 30, 20, 20);
+  ctx.fillText('+', leftControlX + 56, leftControlY + 34);
+
   for (let i = 0; i < numButtons; i++) {
     const tool = tools[i];
     const isSelected = tool.idx === selectedTool;
@@ -204,6 +229,28 @@ export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
 export function handleToolClick(canvas: HTMLCanvasElement, x: number, y: number): boolean {
   const ctrlPanelHeight = 200;
   const panelY = canvas.height - ctrlPanelHeight;
+  
+  // Check size controls in left black space (these are NOT in the control panel)
+  const availableHeight = canvas.height - ctrlPanelHeight;
+  const gameAreaSize = Math.min(canvas.width, availableHeight);
+  const gameOffsetX = (canvas.width - gameAreaSize) / 2;
+  const gameOffsetY = (availableHeight - gameAreaSize) / 2;
+  const leftControlX = Math.max(16, gameOffsetX - 120);
+  const leftControlY = gameOffsetY + 50;
+  
+  // Minus button
+  if (x >= leftControlX && x <= leftControlX + 20 && 
+      y >= leftControlY + 30 && y <= leftControlY + 50) {
+    if (brushSize > 1) brushSize--;
+    return true;
+  }
+  
+  // Plus button  
+  if (x >= leftControlX + 50 && x <= leftControlX + 70 && 
+      y >= leftControlY + 30 && y <= leftControlY + 50) {
+    if (brushSize < 10) brushSize++;
+    return true;
+  }
   
   // Check if click is in control panel
   if (y < panelY) return false;
@@ -266,8 +313,21 @@ export function handleGameClick(canvas: HTMLCanvasElement, gameState: GameState,
   
   // Ensure coordinates are within bounds
   if (gridX >= 0 && gridX < gameState.width && gridY >= 0 && gridY < gameState.height) {
-    const index = gridY * gameState.width + gridX;
-    gameState.grid[index] = selectedTool;
+    // Apply brush with radius
+    for (let dy = -brushSize + 1; dy < brushSize; dy++) {
+      for (let dx = -brushSize + 1; dx < brushSize; dx++) {
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < brushSize) {
+          const targetX = gridX + dx;
+          const targetY = gridY + dy;
+          if (targetX >= 0 && targetX < gameState.width && 
+              targetY >= 0 && targetY < gameState.height) {
+            const index = targetY * gameState.width + targetX;
+            gameState.grid[index] = selectedTool;
+          }
+        }
+      }
+    }
     return true; // Click handled
   }
   
@@ -277,4 +337,9 @@ export function handleGameClick(canvas: HTMLCanvasElement, gameState: GameState,
 // Function to get current selected tool
 export function getSelectedTool(): number {
   return selectedTool;
+}
+
+// Function to get current brush size
+export function getBrushSize(): number {
+  return brushSize;
 }
