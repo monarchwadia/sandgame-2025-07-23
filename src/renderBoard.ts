@@ -1,10 +1,8 @@
+import { UiState } from './UIState';
 // --- Mouse hold support for continuous placement ---
-let isMouseDown = false;
+
 let lastCanvas: HTMLCanvasElement | null = null;
 let lastGameState: GameState | null = null;
-let holdInterval: number | null = null;
-let lastMouseX = 0;
-let lastMouseY = 0;
 
 function onMouseDown(e: MouseEvent) {
   if (!lastCanvas || !lastGameState) return;
@@ -14,38 +12,38 @@ function onMouseDown(e: MouseEvent) {
   const scaleY = lastCanvas.height / rect.height;
   const x = (e.clientX - rect.left) * scaleX;
   const y = (e.clientY - rect.top) * scaleY;
-  lastMouseX = x;
-  lastMouseY = y;
-  isMouseDown = true;
+  UiState.lastMouseX = x;
+  UiState.lastMouseY = y;
+  UiState.isMouseDown = true;
   handleGameClick(lastCanvas, lastGameState, x, y);
   
   // Start continuous placement interval for click and hold
-  if (holdInterval) clearInterval(holdInterval);
-  holdInterval = setInterval(() => {
-    if (isMouseDown && lastCanvas && lastGameState) {
-      handleGameClick(lastCanvas, lastGameState, lastMouseX, lastMouseY);
+  if (UiState.holdInterval) clearInterval(UiState.holdInterval);
+  UiState.holdInterval = setInterval(() => {
+    if (UiState.isMouseDown && lastCanvas && lastGameState) {
+      handleGameClick(lastCanvas, lastGameState, UiState.lastMouseX, UiState.lastMouseY);
     }
   }, 50); // Place particles every 50ms while holding
 }
 
 function onMouseUp() {
-  isMouseDown = false;
-  if (holdInterval) {
-    clearInterval(holdInterval);
-    holdInterval = null;
+  UiState.isMouseDown = false;
+  if (UiState.holdInterval) {
+    clearInterval(UiState.holdInterval);
+    UiState.holdInterval = null;
   }
 }
 
 function onMouseMove(e: MouseEvent) {
-  if (!isMouseDown || !lastCanvas || !lastGameState) return;
+  if (!UiState.isMouseDown || !lastCanvas || !lastGameState) return;
   const rect = lastCanvas.getBoundingClientRect();
   // Account for canvas scaling by converting from display coordinates to canvas coordinates
   const scaleX = lastCanvas.width / rect.width;
   const scaleY = lastCanvas.height / rect.height;
   const x = (e.clientX - rect.left) * scaleX;
   const y = (e.clientY - rect.top) * scaleY;
-  lastMouseX = x;
-  lastMouseY = y;
+  UiState.lastMouseX = x;
+  UiState.lastMouseY = y;
   handleGameClick(lastCanvas, lastGameState, x, y);
 }
 
