@@ -5,6 +5,7 @@ import { WOOD_IDX } from './wood.particle';
 import { SKY_IDX } from './sky.particle';
 import { HOUR_INDEXES } from '../constants';
 import type { GameState } from '../GameState';
+import { areParticlesEqual } from '../utils';
 
 export const GRASS_IDX = 3;
 
@@ -24,7 +25,7 @@ export const grassParticle: ParticleType = {
         for (const [adjx, adjy] of adjacents) {
             if (adjx >= 0 && adjx < width && adjy >= 0 && adjy < height) {
                 const adjIndex = adjy * width + adjx;
-                if (grid[adjIndex] === WATER_IDX) { // 2 = water
+                if (areParticlesEqual(grid[adjIndex], WATER_IDX)) { // 2 = water
                     touchingWater = true;
                     break;
                 }
@@ -37,7 +38,7 @@ export const grassParticle: ParticleType = {
             const [startHour, endHour] = HOUR_INDEXES.photosynthesis;
             if (currentHour >= startHour && currentHour <= endHour) {
                 const above = (y - 1) * width;
-                if (grid[above] === SKY_IDX) { // sky above
+                if (areParticlesEqual(grid[above], SKY_IDX)) { // sky above
                     grid[above] = WOOD_IDX;
                     return;
                 }
@@ -47,7 +48,7 @@ export const grassParticle: ParticleType = {
         // Grass only falls vertically, no cascading
         if (y < height - 1) {
             const below = (y + 1) * width + x;
-            if (grid[below] === SKY_IDX) {
+            if (areParticlesEqual(grid[below], SKY_IDX)) {
                 grid[i] = SKY_IDX;
                 grid[below] = GRASS_IDX; // 3 = grass
             }

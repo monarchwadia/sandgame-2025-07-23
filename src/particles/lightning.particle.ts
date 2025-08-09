@@ -9,6 +9,7 @@ import { HUMAN_IDX } from './human.particle';
 import { FIRE_IDX } from './fire.particle';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
 import { getRandom } from '../randomseed';
+import { areParticlesEqual } from '../utils';
 
 export const LIGHTNING_IDX = 9;
 
@@ -27,7 +28,7 @@ function eraseContiguousLightning(grid: Uint32Array, width: number, height: numb
                 const ny = cy + dy;
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     const ni = getIndex(nx, ny, width);
-                    if (grid[ni] === LIGHTNING_IDX) {
+                    if (areParticlesEqual(grid[ni], LIGHTNING_IDX)) {
                         stack.push([nx, ny]);
                     }
                 }
@@ -61,11 +62,11 @@ export const lightningParticle: ParticleType = {
                             if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                                 const ni = getIndex(nx, ny, width);
                                 if (
-                                    grid[ni] === WOOD_IDX ||
-                                    grid[ni] === TREETOP_IDX ||
-                                    grid[ni] === GRASS_IDX ||
-                                    grid[ni] === HUMAN_IDX ||
-                                    grid[ni] === SKY_IDX // Allow lightning to ignite sky
+                                    areParticlesEqual(grid[ni], WOOD_IDX) ||
+                                    areParticlesEqual(grid[ni], TREETOP_IDX) ||
+                                    areParticlesEqual(grid[ni], GRASS_IDX) ||
+                                    areParticlesEqual(grid[ni], HUMAN_IDX) ||
+                                    areParticlesEqual(grid[ni], SKY_IDX) // Allow lightning to ignite sky
                                 ) {
                                     grid[ni] = FIRE_IDX;
                                 }
@@ -81,9 +82,9 @@ export const lightningParticle: ParticleType = {
         // Only allow the head to spawn: no lightning in bottom, bottomleft, bottomright
         let isHead = true;
         if (y < height - 1) {
-            if (grid[getIndex(x, y + 1, width)] === LIGHTNING_IDX) isHead = false;
-            if (x > 0 && grid[getIndex(x - 1, y + 1, width)] === LIGHTNING_IDX) isHead = false;
-            if (x < width - 1 && grid[getIndex(x + 1, y + 1, width)] === LIGHTNING_IDX) isHead = false;
+            if (areParticlesEqual(grid[getIndex(x, y + 1, width)], LIGHTNING_IDX)) isHead = false;
+            if (x > 0 && areParticlesEqual(grid[getIndex(x - 1, y + 1, width)], LIGHTNING_IDX)) isHead = false;
+            if (x < width - 1 && areParticlesEqual(grid[getIndex(x + 1, y + 1, width)], LIGHTNING_IDX)) isHead = false;
         } else {
             isHead = false;
         }
@@ -92,9 +93,9 @@ export const lightningParticle: ParticleType = {
         // Spawn lightning below (biased towards sides)
         if (y < height - 1) {
             const options = [];
-            if (grid[getIndex(x, y + 1, width)] === SKY_IDX) options.push([x, y + 1]);
-            if (x > 0 && grid[getIndex(x - 1, y + 1, width)] === SKY_IDX) options.push([x - 1, y + 1]);
-            if (x < width - 1 && grid[getIndex(x + 1, y + 1, width)] === SKY_IDX) options.push([x + 1, y + 1]);
+            if (areParticlesEqual(grid[getIndex(x, y + 1, width)], SKY_IDX)) options.push([x, y + 1]);
+            if (x > 0 && areParticlesEqual(grid[getIndex(x - 1, y + 1, width)], SKY_IDX)) options.push([x - 1, y + 1]);
+            if (x < width - 1 && areParticlesEqual(grid[getIndex(x + 1, y + 1, width)], SKY_IDX)) options.push([x + 1, y + 1]);
             if (options.length > 0) {
                 // Pick random with bias towards sides
                 const choice = getRandom() < 0.7 && options.length > 1 ? 

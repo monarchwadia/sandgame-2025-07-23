@@ -10,6 +10,7 @@ import { HOUR_INDEXES } from '../constants';
 import { ACID_IDX } from './acid.particle';
 import { getRandom } from '../randomseed';
 import { OIL_IDX } from './oil.particle';
+import { areParticlesEqual } from '../utils';
 
 export const WATER_IDX = 2;
 
@@ -41,7 +42,7 @@ export const waterParticle: ParticleType = {
         
         // Check adjacent sand and possibly turn it into grass
         for (const idx of adjacents) {
-            if (idx >= 0 && idx < grid.length && grid[idx] === SAND_IDX) {
+            if (idx >= 0 && idx < grid.length && areParticlesEqual(grid[idx], SAND_IDX)) {
                 if (getRandom() < 0.01) {
                     grid[idx] = GRASS_IDX;
                 }
@@ -49,17 +50,17 @@ export const waterParticle: ParticleType = {
         }
         if (y < height - 1) {
             const below = (y + 1) * width + x;
-            if (grid[below] === SKY_IDX) {
+            if (areParticlesEqual(grid[below], SKY_IDX)) {
                 // Water falls down into empty space
                 grid[i] = SKY_IDX;
                 grid[below] = WATER_IDX;
                 return;
-            } else if (grid[below] === AIRPOLLUTION_IDX) {
+            } else if (areParticlesEqual(grid[below], AIRPOLLUTION_IDX)) {
                 // Water turns into oil when it touches air pollution
                 grid[i] = SKY_IDX;
                 grid[below] = ACID_IDX;
                 return;
-            } else if (grid[below] === OIL_IDX) {
+            } else if (areParticlesEqual(grid[below], OIL_IDX)) {
                 // Water displaces oil
                 grid[i] = OIL_IDX;
                 grid[below] = WATER_IDX;
@@ -69,16 +70,16 @@ export const waterParticle: ParticleType = {
         // Try to move left or right if not moving down
         const left = y * width + (x - 1);
         const right = y * width + (x + 1);
-        const canLeft = x > 0 && grid[left] === SKY_IDX || grid[left] === OIL_IDX;
-        const canRight = x < width - 1 && grid[right] === SKY_IDX || grid[right] === OIL_IDX;
+        const canLeft = x > 0 && areParticlesEqual(grid[left], SKY_IDX) || areParticlesEqual(grid[left], OIL_IDX);
+        const canRight = x < width - 1 && areParticlesEqual(grid[right], SKY_IDX) || areParticlesEqual(grid[right], OIL_IDX);
         
         // Check if water would contact air pollution when moving left/right
-        if (x > 0 && grid[left] === AIRPOLLUTION_IDX) {
+        if (x > 0 && areParticlesEqual(grid[left], AIRPOLLUTION_IDX)) {
             grid[i] = SKY_IDX;
             grid[left] = ACID_IDX;
             return;
         }
-        if (x < width - 1 && grid[right] === AIRPOLLUTION_IDX) {
+        if (x < width - 1 && areParticlesEqual(grid[right], AIRPOLLUTION_IDX)) {
             grid[i] = SKY_IDX;
             grid[right] = ACID_IDX;
             return;

@@ -2,6 +2,7 @@ import type { GameState } from './GameState';
 import { particlesRegistry } from './particles/particlesRegistry';
 import { UiState } from './UIState';
 import { tools } from './tools';
+import { areParticlesEqual } from './utils';
 
 // Cached ImageData for the square game area
 let imageData: ImageData;
@@ -148,7 +149,7 @@ function drawToolButtons(ctx: CanvasRenderingContext2D, geom: OverlayGeometry) {
 
   for (let i = 0; i < tools.length; i++) {
     const tool = tools[i];
-    const isSelected = tool.idx === UiState.selectedTool;
+    const isSelected = areParticlesEqual(tool.idx, UiState.selectedTool);
     const buttonY = buttonStartY + i * (buttonHeight + 10);
 
     // Background

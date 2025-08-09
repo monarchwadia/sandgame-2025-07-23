@@ -4,6 +4,7 @@ import { PIPE_COLOR } from "../palette";
 import { CONCRETE_IDX } from "./concrete.particle";
 import { OIL_IDX } from "./oil.particle";
 import { getRandom } from "../randomseed";
+import { areParticlesEqual } from "../utils";
 
 export const PIPE_IDX = 10;
 
@@ -43,12 +44,12 @@ export const pipeParticle: ParticleType = {
         const randomInt = getRandom();
 
         // if above is concrete, it breaks through
-        if (grid[aboveIdx] === CONCRETE_IDX) {
+        if (areParticlesEqual(grid[aboveIdx], CONCRETE_IDX)) {
           grid[aboveIdx] = PIPE_IDX;
         }
 
         // if above is sky, it spouts oil slowly
-        if (grid[aboveIdx] === SKY_IDX) {
+        if (areParticlesEqual(grid[aboveIdx], SKY_IDX)) {
           if (randomInt < 0.01) {
             // 0.01% chance per frame
             grid[aboveIdx] = OIL_IDX; // Spout oil

@@ -6,6 +6,7 @@ import { CONCRETE_COLOR } from '../palette';
 import { HUMAN_IDX } from './human.particle';
 import { PIPE_IDX } from './pipe.particle';
 import { getRandom } from '../randomseed';
+import { areParticlesEqual } from '../utils';
 
 const GROWTH_FACTOR = 0.1;
 
@@ -37,7 +38,7 @@ export const concreteParticle: ParticleType = {
                 const nx = x + dx;
                 const ny = y + dy;
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    if (grid[getIndex(nx, ny, width)] === PIPE_IDX) {
+                    if (areParticlesEqual(grid[getIndex(nx, ny, width)], PIPE_IDX)) {
                         pipeNearby = true;
                         break;
                     }
@@ -59,7 +60,7 @@ export const concreteParticle: ParticleType = {
                 const nx = x + dx;
                 const ny = y + dy;
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    if (grid[getIndex(nx, ny, width)] === HUMAN_IDX) {
+                    if (areParticlesEqual(grid[getIndex(nx, ny, width)], HUMAN_IDX)) {
                         humanNearby = true;
                         break;
                     }
@@ -76,7 +77,7 @@ export const concreteParticle: ParticleType = {
             for (let dy = 1; dy <= supportDistance; dy++) {
                 const supportY = checkY + dy;
                 if (supportY >= height) return true; // Ground level counts as support
-                if (grid[getIndex(checkX, supportY, width)] === CONCRETE_IDX) {
+                if (areParticlesEqual(grid[getIndex(checkX, supportY, width)], CONCRETE_IDX)) {
                     return true;
                 }
             }
@@ -89,14 +90,14 @@ export const concreteParticle: ParticleType = {
         // Grow left or right if possible (slowly) and there's adequate support
         if (getRandom() < GROWTH_FACTOR) {
             // Try to grow left
-            if (x > 0 && grid[getIndex(x - 1, y, width)] === SKY_IDX) {
+            if (x > 0 && areParticlesEqual(grid[getIndex(x - 1, y, width)], SKY_IDX)) {
                 if (hasSupport(x - 1, y, slopeDistance)) {
                     grid[getIndex(x - 1, y, width)] = CONCRETE_IDX;
                     return;
                 }
             }
             // Try to grow right
-            if (x < width - 1 && grid[getIndex(x + 1, y, width)] === SKY_IDX) {
+            if (x < width - 1 && areParticlesEqual(grid[getIndex(x + 1, y, width)], SKY_IDX)) {
                 if (hasSupport(x + 1, y, slopeDistance)) {
                     grid[getIndex(x + 1, y, width)] = CONCRETE_IDX;
                     return;
@@ -105,12 +106,12 @@ export const concreteParticle: ParticleType = {
         }
 
         // Grow upward only when there's a solid base (maintains pyramid structure)
-        if (y > 0 && grid[getIndex(x, y - 1, width)] === SKY_IDX) {
+        if (y > 0 && areParticlesEqual(grid[getIndex(x, y - 1, width)], SKY_IDX)) {
             // Check for solid foundation below (at least 3 concrete blocks in a row)
             const hasFoundation = y < height - 1 && 
-                (x === 0 || grid[getIndex(x - 1, y + 1, width)] === CONCRETE_IDX) &&
-                grid[getIndex(x, y + 1, width)] === CONCRETE_IDX &&
-                (x === width - 1 || grid[getIndex(x + 1, y + 1, width)] === CONCRETE_IDX);
+                (x === 0 || areParticlesEqual(grid[getIndex(x - 1, y + 1, width)], CONCRETE_IDX)) &&
+                areParticlesEqual(grid[getIndex(x, y + 1, width)], CONCRETE_IDX) &&
+                (x === width - 1 || areParticlesEqual(grid[getIndex(x + 1, y + 1, width)] , CONCRETE_IDX));
             
             if (hasFoundation && getRandom() < GROWTH_FACTOR) {
                 grid[getIndex(x, y - 1, width)] = CONCRETE_IDX;

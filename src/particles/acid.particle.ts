@@ -6,6 +6,7 @@ import { SAND_IDX } from './sand.particle';
 import { GRASS_IDX } from './grass.particle';
 import { WOOD_IDX } from './wood.particle';
 import { getRandom } from '../randomseed';
+import { areParticlesEqual } from '../utils';
 
 export const ACID_IDX = 14;
 
@@ -16,8 +17,8 @@ const corrode = (
 ) => {
     if (targetIdx < 0 || targetIdx >= grid.length) return;
     // Acid corrodes concrete, sand, grass, and wood
-    if (grid[targetIdx] === CONCRETE_IDX || grid[targetIdx] === SAND_IDX || 
-        grid[targetIdx] === GRASS_IDX || grid[targetIdx] === WOOD_IDX) {
+    if (areParticlesEqual(grid[targetIdx], CONCRETE_IDX) || areParticlesEqual(grid[targetIdx], SAND_IDX) || 
+        areParticlesEqual(grid[targetIdx], GRASS_IDX) || areParticlesEqual(grid[targetIdx], WOOD_IDX)) {
             grid[targetIdx] = ACID_IDX;
             grid[selfIdx] = SKY_IDX;
             
@@ -82,7 +83,7 @@ export const acidParticle: ParticleType = {
         // Acid falls down like water
         if (y < height - 1) {
             const below = (y + 1) * width + x;
-            if (grid[below] === SKY_IDX) {
+            if (areParticlesEqual(grid[below], SKY_IDX)) {
                 grid[selfIdx] = SKY_IDX;
                 grid[below] = ACID_IDX;
                 return;
@@ -92,8 +93,8 @@ export const acidParticle: ParticleType = {
         // Try to move left or right if not moving down
         const bottomLeft = ((y + 1) * width + (x - 1));
         const bottomRight = ((y + 1) * width + (x + 1));
-        const canLeft = x > 0 && grid[bottomLeft] === SKY_IDX;
-        const canRight = x < width - 1 && grid[bottomRight] === SKY_IDX;
+        const canLeft = x > 0 && areParticlesEqual(grid[bottomLeft], SKY_IDX);
+        const canRight = x < width - 1 && areParticlesEqual(grid[bottomRight], SKY_IDX);
         
         if (canLeft && canRight) {
             if (getRandom() < 0.5) {

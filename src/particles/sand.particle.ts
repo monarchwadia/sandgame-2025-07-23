@@ -3,6 +3,7 @@ import { SAND_COLOR } from "../palette";
 import { SKY_IDX } from "./sky.particle";
 import { WATER_IDX } from "./water.particle";
 import { getRandom } from "../randomseed";
+import { areParticlesEqual } from "../utils";
 
 export const SAND_IDX = 1;
 
@@ -33,14 +34,14 @@ export const sandParticle: ParticleType = {
     const belowIdx = (y + 1) * width + x;
 
     // Sand falls through sky
-    if (grid[belowIdx] === SKY_IDX) {
+    if (areParticlesEqual(grid[belowIdx], SKY_IDX)) {
         grid[selfIdx] = SKY_IDX; // Clear current cell
         grid[belowIdx] = SAND_IDX; // Set below cell to sand
         return;
     }
 
     // Sand also falls through water
-    if (grid[belowIdx] === WATER_IDX) {
+    if (areParticlesEqual(grid[belowIdx], WATER_IDX)) {
         grid[selfIdx] = WATER_IDX; // Clear current cell
         grid[belowIdx] = SAND_IDX; // Set below cell to sand
         return;
@@ -50,8 +51,8 @@ export const sandParticle: ParticleType = {
     // It can cascade through either sky or water
     const downLeft = (y + 1) * width + (x - 1);
     const downRight = (y + 1) * width + (x + 1);
-    const canCascadeLeft = x > 0 && (grid[downLeft] === SKY_IDX || grid[downLeft] === WATER_IDX);
-    const canCascadeRight = x > 0 && (grid[downRight] === SKY_IDX || grid[downRight] === WATER_IDX);
+    const canCascadeLeft = x > 0 && areParticlesEqual(grid[downLeft], SKY_IDX) || areParticlesEqual(grid[downLeft], WATER_IDX);
+    const canCascadeRight = x > 0 && (areParticlesEqual(grid[downRight], SKY_IDX) || areParticlesEqual(grid[downRight], WATER_IDX));
     if (canCascadeLeft && canCascadeRight) {
       // Randomly choose to cascade left or right
       if (getRandom() < 0.5) {

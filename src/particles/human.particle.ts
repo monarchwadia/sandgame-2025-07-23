@@ -9,6 +9,7 @@ import { CONCRETE_IDX } from './concrete.particle';
 import type { GameState } from '../GameState';
 import { HUMAN_COLOR } from '../palette';
 import { getRandom } from '../randomseed';
+import { areParticlesEqual } from '../utils';
 
 export const HUMAN_IDX = 6;
 
@@ -20,7 +21,7 @@ export const humanParticle: ParticleType = {
         // Always try to fall down if possible
         if (y < height - 1) {
             const below = getBelow(x, y, width);
-            if (grid[below] === 0) {
+            if (areParticlesEqual(grid[below], SKY_IDX)) {
                 grid[i] = 0;
                 grid[below] = HUMAN_IDX;
                 return;
@@ -39,15 +40,15 @@ export const humanParticle: ParticleType = {
                     const ni = getIndex(nx, ny, width);
 
                     // Move if the space is empty or water
-                    if (grid[ni] === 0 || grid[ni] === WATER_IDX) {
-                        grid[i] = grid[ni] === WATER_IDX ? WATER_IDX : 0;
+                    if (areParticlesEqual(grid[ni], SKY_IDX) || areParticlesEqual(grid[ni], WATER_IDX)) {
+                        grid[i] = areParticlesEqual(grid[ni], WATER_IDX) ? WATER_IDX : 0;
                         grid[ni] = HUMAN_IDX;
                         break;
                     }
 
                     // else, if there is a sky which has concrete anywhere in its neighorhood,
                     // then human can move to that sky
-                    if (grid[ni] === SKY_IDX) {
+                    if (areParticlesEqual(grid[ni], SKY_IDX)) {
                         let canMove = false;
                         for (let dx = -1; dx <= 1; dx++) {
                             for (let dy = -1; dy <= 1; dy++) {
@@ -55,7 +56,7 @@ export const humanParticle: ParticleType = {
                                 const nx2 = nx + dx;
                                 const ny2 = ny + dy;
                                 if (nx2 >= 0 && nx2 < width && ny2 >= 0 && ny2 < height) {
-                                    if (grid[getIndex(nx2, ny2, width)] === CONCRETE_IDX) {
+                                    if (areParticlesEqual(grid[getIndex(nx2, ny2, width)], CONCRETE_IDX)) {
                                         canMove = true;
                                         break;
                                     }
@@ -82,7 +83,7 @@ export const humanParticle: ParticleType = {
                     const idx = getIndex(ax, ay, width);
                     const targetSpace = grid[idx];
                     // Debug: log what we're checking
-                    if (targetSpace === WOOD_IDX || targetSpace === TREETOP_IDX || targetSpace === GRASS_IDX) {
+                    if (areParticlesEqual(targetSpace, WOOD_IDX) || areParticlesEqual(targetSpace, TREETOP_IDX) || areParticlesEqual(targetSpace, GRASS_IDX)) {
                         grid[idx] = SKY_IDX; // Remove wood, turn to sky
                         chopped = true;
                     }
@@ -91,7 +92,7 @@ export const humanParticle: ParticleType = {
             // If chopped, replace below with concrete (but not if human is there)
             if (chopped && y < height - 1) {
                 const below = getBelow(x, y, width);
-                if (grid[below] !== HUMAN_IDX) {
+                if (!areParticlesEqual(grid[below], HUMAN_IDX)) {
                     grid[below] = CONCRETE_IDX;
                 }
             }
@@ -99,7 +100,7 @@ export const humanParticle: ParticleType = {
             // If the element above is concrete, destroy it
             if (y > 0) {
                 const above = getIndex(x, y - 1, width);
-                if (grid[above] === CONCRETE_IDX) {
+                if (areParticlesEqual(grid[above], CONCRETE_IDX)) {
                     // but only if the human is trapped (no sky or water anywhere next to it)
                     let trapped = true;
                     for (let dx = -1; dx <= 1; dx++) {
@@ -109,7 +110,7 @@ export const humanParticle: ParticleType = {
                             const ny = y + dy;
                             if (nx >= 0 && nx < width && ny >= 0 && ny <   height) {
                                 const neighborIdx = getIndex(nx, ny, width);
-                                if (grid[neighborIdx] === SKY_IDX || grid[neighborIdx] === WATER_IDX) {
+                                if (areParticlesEqual(grid[neighborIdx], SKY_IDX) || areParticlesEqual(grid[neighborIdx], WATER_IDX)) {
                                     trapped = false;
                                     break;
                                 }

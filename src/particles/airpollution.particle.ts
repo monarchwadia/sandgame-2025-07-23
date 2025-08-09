@@ -2,6 +2,7 @@ import type { ParticleType } from "./particles.types";
 import { AIRPOLLUTION_COLOR } from "../palette";
 import { SKY_IDX } from "./sky.particle";
 import { getRandom } from "../randomseed";
+import { areParticlesEqual } from "../utils";
 
 export const AIRPOLLUTION_IDX = 13;
 
@@ -37,7 +38,7 @@ export const airpollutionParticle: ParticleType = {
 
       if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
         const newIdx = nx + ny * width;
-        if (grid[newIdx] === SKY_IDX) {
+        if (areParticlesEqual(grid[newIdx], SKY_IDX)) {
           grid[newIdx] = AIRPOLLUTION_IDX;
           grid[idx] = SKY_IDX;
         }
@@ -52,7 +53,7 @@ export const airpollutionParticle: ParticleType = {
 
         const newY = Math.max(0, y + yMovement);
         const newIdx = x + newY * width;
-        if (grid[newIdx] === SKY_IDX) {
+        if (areParticlesEqual(grid[newIdx], SKY_IDX)) {
           grid[newIdx] = AIRPOLLUTION_IDX;
           grid[idx] = SKY_IDX;
         }

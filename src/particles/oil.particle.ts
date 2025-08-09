@@ -5,6 +5,7 @@ import { OIL_COLOR } from '../palette';
 import type { GameState } from '../GameState';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
 import { getRandom } from '../randomseed';
+import { areParticlesEqual } from '../utils';
 
 export const OIL_IDX = 11;
 
@@ -17,7 +18,7 @@ export const oilParticle: ParticleType = {
 
         if (y < height - 1) {
             // it falls
-            if (grid[belowId] === SKY_IDX || grid[belowId] === AIRPOLLUTION_IDX) {
+            if (areParticlesEqual(grid[belowId], SKY_IDX) || areParticlesEqual(grid[belowId], AIRPOLLUTION_IDX)) {
                 grid[i] = SKY_IDX;
                 grid[belowId] = OIL_IDX;
                 return;
@@ -32,7 +33,7 @@ export const oilParticle: ParticleType = {
             for (const [nx, ny] of directions.sort(() => getRandom() - 0.5)) {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     const ni = getIndex(nx, ny, width);
-                    if (grid[ni] === SKY_IDX) {
+                    if (areParticlesEqual(grid[ni], SKY_IDX)) {
                         grid[ni] = OIL_IDX;
                         grid[i] = SKY_IDX;
                         break;

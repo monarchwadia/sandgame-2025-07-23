@@ -7,6 +7,7 @@ import { FIRE_COLOR } from '../palette';
 import { AIRPOLLUTION_IDX } from './airpollution.particle';
 import { getRandom } from '../randomseed';
 import { OIL_IDX } from './oil.particle';
+import { areParticlesEqual } from '../utils';
 
 export const FIRE_IDX = 8;
 
@@ -62,7 +63,7 @@ export const fireParticle: ParticleType = {
 
         // Pollution spawn
         if (getRandom() < 0.002) {
-            if (y > 0 && upIdx >= 0 && grid[upIdx] === SKY_IDX) {
+            if (y > 0 && upIdx >= 0 && areParticlesEqual(grid[upIdx], SKY_IDX)) {
                 grid[upIdx] = AIRPOLLUTION_IDX;
             }
         }
@@ -79,7 +80,7 @@ export const fireParticle: ParticleType = {
         ]) {
             if (idx < 0 || idx >= grid.length) continue;
             const pt = grid[idx];
-            if (pt === WOOD_IDX || pt === TREETOP_IDX || pt === GRASS_IDX || pt === OIL_IDX) {
+            if (areParticlesEqual(pt, WOOD_IDX) || areParticlesEqual(pt, TREETOP_IDX) || areParticlesEqual(pt, GRASS_IDX) || areParticlesEqual(pt, OIL_IDX)) {
                 grid[idx] = FIRE_IDX;
             }
         }

@@ -6,6 +6,7 @@ import { SKY_IDX } from './sky.particle';
 import { HOUR_INDEXES } from '../constants';
 import type { GameState } from '../GameState';
 import { getRandom } from '../randomseed';
+import { areParticlesEqual } from '../utils';
 
 export const TREETOP_IDX = 5;
 
@@ -30,12 +31,12 @@ export const treetopParticle: ParticleType = {
             if (neighbor.x >= 0 && neighbor.x < width && neighbor.y >= 0 && neighbor.y < height) {
                 const neighborIndex = getIndex(neighbor.x, neighbor.y, width);
                 const neighborType = grid[neighborIndex];
-                if (neighborType === WOOD_IDX) { // wood
+                if (areParticlesEqual(neighborType, WOOD_IDX)) {
                     woodNeighbours++;
-                } else if (neighborType === TREETOP_IDX) { // treetop
+                } else if (areParticlesEqual(neighborType, TREETOP_IDX)) {
                     treetopNeighbours++;
                     treetopNeighbors++;
-                } else if (neighborType === SKY_IDX) { // sky - potential growth spot
+                } else if (areParticlesEqual(neighborType, SKY_IDX)) { // potential growth spot
                     growthCandidates.push(neighborIndex);
                 }
             }
