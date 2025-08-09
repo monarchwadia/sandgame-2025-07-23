@@ -3,6 +3,7 @@ import { particlesRegistry } from './particles/particlesRegistry';
 import { UiState } from './UIState';
 import { tools } from './tools';
 import { areParticlesEqual, getParticleId } from './utils';
+import { getSimSpeed } from './simSpeed';
 
 // Cached ImageData for the square game area
 let imageData: ImageData;
@@ -199,6 +200,32 @@ function drawBrushControls(ctx: CanvasRenderingContext2D, geom: OverlayGeometry)
   ctx.strokeRect(sizeControlCenterX + buttonSpacing - sizeButtonSize, sizeButtonY, sizeButtonSize, sizeButtonSize);
   ctx.fillStyle = 'white';
   ctx.fillText('+', sizeControlCenterX + buttonSpacing - sizeButtonSize + sizeButtonSize / 2, sizeButtonY + sizeButtonSize / 2);
+
+  // --- Speed Controls ---
+  const speedLabelY = sizeButtonY + sizeButtonSize + 35;
+  const speedButtonsY = speedLabelY + 20;
+  ctx.fillStyle = 'white';
+  ctx.fillText('SPEED', sizeControlCenterX, speedLabelY);
+
+  // Speed minus
+  ctx.fillStyle = '#666';
+  ctx.fillRect(sizeControlCenterX - buttonSpacing, speedButtonsY, sizeButtonSize, sizeButtonSize);
+  ctx.strokeStyle = '#aaa';
+  ctx.strokeRect(sizeControlCenterX - buttonSpacing, speedButtonsY, sizeButtonSize, sizeButtonSize);
+  ctx.fillStyle = 'white';
+  ctx.fillText('-', sizeControlCenterX - buttonSpacing + sizeButtonSize / 2, speedButtonsY + sizeButtonSize / 2);
+
+  // Current speed value (e.g., 2x)
+  ctx.fillStyle = 'white';
+  ctx.fillText(`${getSimSpeed(UiState.simSpeedIndex).toString()}x`, sizeControlCenterX, speedButtonsY + sizeButtonSize / 2);
+
+  // Speed plus
+  ctx.fillStyle = '#666';
+  ctx.fillRect(sizeControlCenterX + buttonSpacing - sizeButtonSize, speedButtonsY, sizeButtonSize, sizeButtonSize);
+  ctx.strokeStyle = '#aaa';
+  ctx.strokeRect(sizeControlCenterX + buttonSpacing - sizeButtonSize, speedButtonsY, sizeButtonSize, sizeButtonSize);
+  ctx.fillStyle = 'white';
+  ctx.fillText('+', sizeControlCenterX + buttonSpacing - sizeButtonSize + sizeButtonSize / 2, speedButtonsY + sizeButtonSize / 2);
 }
 
 export function renderBoard(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gameState: GameState): void {

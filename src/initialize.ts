@@ -8,9 +8,10 @@ import { SKY_IDX } from './particles/sky.particle';
 import { WATER_IDX } from './particles/water.particle';
 import { renderBoard } from './renderBoard';
 import { updateGameState } from './updateGameState';
-import { maybeSpawnHumans } from './environment/maybeSpawnHumansProcess';
 import { getRandom } from './randomseed';
 import { setupMouseAndKeyboard } from './mouseAndKeyboard';
+import { UiState } from './UIState';
+import { getSimSpeed } from './simSpeed';
 
 
 let renderCounter = 0;
@@ -56,6 +57,7 @@ export function initialize(target: HTMLElement, gameState: GameState) {
     const now = performance.now();
     accumulator += now - lastUpdate;
     lastUpdate = now;
+    const speed = getSimSpeed(UiState.simSpeedIndex);
 
     // Run fixed-timestep simulation steps to catch up
     let maxSteps = 10;
@@ -65,8 +67,10 @@ export function initialize(target: HTMLElement, gameState: GameState) {
         // Prevent infinite loop
         break;
       }
-      updateGameState(gameState);
-      maybeSpawnHumans(gameState);
+      // Run multiple simulation steps per frame based on speed
+      for (let i = 0; i < speed; i++) {
+        updateGameState(gameState);
+      }
       accumulator -= targetDelta;
     }
 

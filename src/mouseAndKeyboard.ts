@@ -1,4 +1,5 @@
 import type { GameState } from "./GameState";
+import { SPEED_LEVELS } from "./simSpeed";
 import { tools } from "./tools";
 import { UiState } from "./UIState";
 
@@ -65,6 +66,11 @@ export function handleToolClick(
   const sizeButtonSize = Math.max(20, Math.min(30, overlayWidth / 15));
   const sizeControlCenterX = overlayX + overlayWidth / 2;
   const buttonSpacing = Math.max(25, overlayWidth / 10);
+  // Speed controls geometry
+  const speedControlY = sizeButtonY + sizeButtonSize + 35;
+  const speedButtonY = speedControlY + 20;
+  const speedButtonSize = sizeButtonSize;
+  const speedControlCenterX = sizeControlCenterX;
 
   // Minus button
   if (
@@ -85,6 +91,26 @@ export function handleToolClick(
     y <= sizeButtonY + sizeButtonSize
   ) {
     if (UiState.brushSize < 10) UiState.brushSize++;
+    return true;
+  }
+
+  // Speed controls (reuse +/- layout below)
+  if (
+    x >= speedControlCenterX - buttonSpacing &&
+    x <= speedControlCenterX - buttonSpacing + speedButtonSize &&
+    y >= speedButtonY &&
+    y <= speedButtonY + speedButtonSize
+  ) {
+    if (UiState.simSpeedIndex > 0) UiState.simSpeedIndex--;
+    return true;
+  }
+  if (
+    x >= speedControlCenterX + buttonSpacing - speedButtonSize &&
+    x <= speedControlCenterX + buttonSpacing &&
+    y >= speedButtonY &&
+    y <= speedButtonY + speedButtonSize
+  ) {
+    if (UiState.simSpeedIndex < SPEED_LEVELS.length - 1) UiState.simSpeedIndex++;
     return true;
   }
 

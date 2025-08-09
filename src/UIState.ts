@@ -1,6 +1,8 @@
 import type { GameState } from "./GameState";
 import { SAND_IDX } from "./particles/sand.particle";
 
+
+
 export const UiState = {
     holdInterval: null as  number | null,
     lastMouseX: 0,
@@ -11,4 +13,5 @@ export const UiState = {
     brushSize: 1, // Default brush size
     isMouseDown: false, // Track mouse down state
     isOverlayOpen: false, // Control panel overlay state
-}
+    simSpeedIndex: 0,
+};
