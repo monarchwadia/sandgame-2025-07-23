@@ -1,4 +1,4 @@
-import { getIndex, getBelow } from '../gridUtils';
+import { getIndex } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { WATER_COLOR } from '../palette';
 import { SAND_IDX } from './sand.particle';

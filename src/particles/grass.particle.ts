@@ -1,4 +1,3 @@
-import { getIndex, getBelow } from '../gridUtils';
 import type { ParticleType } from './particles.types';
 import { GRASS_COLOR } from '../palette';
 import { WATER_IDX } from './water.particle';
