@@ -13,7 +13,6 @@ export const PIPE_COLOR: RGBA = [0, 174, 255, 255]; // industrial bright blue
 export const OIL_COLOR: RGBA = [0, 0, 0, 255]; // black
 export const AIRPOLLUTION_COLOR: RGBA = [120, 255, 0, 255]; // lime green, semi-transparent
 export const ACID_COLOR: RGBA = [220, 255, 60, 200]; // lime yellow, semi-transparent
-export const BOUNCY_COLOR: RGBA = [255, 0, 200, 255]; // bright pink
 export const SKY_NIGHT_COLOR: RGBA = [186, 186, 255, 80]; // lavender
 export const SKY_DAY_COLOR: RGBA   = [186, 225, 255, 90]; // pastel blue
 
