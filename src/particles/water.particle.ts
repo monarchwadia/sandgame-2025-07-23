@@ -27,14 +27,19 @@ export const waterParticle: ParticleType = {
             }
         }
         // Water falls down if possible, else flows left/right
-        const i = getIndex(x, y, width);
-        // Check adjacent sand and possibly turn it into grass
+        const i = y * width + x;
         const adjacents = [
-            getIndex(x - 1, y, width),
-            getIndex(x + 1, y, width),
-            getIndex(x, y - 1, width),
-            getIndex(x, y + 1, width)
+            (y - 1) * width + (x - 1),
+            (y - 1) * width + x,
+            (y - 1) * width + (x + 1),
+            y * width + (x - 1),
+            y * width + (x + 1),
+            (y + 1) * width + (x - 1),
+            (y + 1) * width + x,
+            (y + 1) * width + (x + 1),
         ];
+        
+        // Check adjacent sand and possibly turn it into grass
         for (const idx of adjacents) {
             if (idx >= 0 && idx < grid.length && grid[idx] === SAND_IDX) {
                 if (getRandom() < 0.01) {
@@ -43,7 +48,7 @@ export const waterParticle: ParticleType = {
             }
         }
         if (y < height - 1) {
-            const below = getBelow(x, y, width);
+            const below = (y + 1) * width + x;
             if (grid[below] === SKY_IDX) {
                 // Water falls down into empty space
                 grid[i] = SKY_IDX;
