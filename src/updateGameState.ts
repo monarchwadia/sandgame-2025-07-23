@@ -5,6 +5,7 @@ import { rainProcessor } from './environment/rain';
 import { timeOfDayProcessor } from './environment/timeOfDay';
 import type { GameState } from './GameState';
 import { particlesRegistry } from './particles/particlesRegistry';
+import { getParticleId } from './utils';
 
 // This determines the horizontal scan direction for particle processing. This is important
 // because without it, particles get biased in which direction they want to fall. 
@@ -24,13 +25,17 @@ export function updateGameState(gameState: GameState): void {
   if (scanLeftToRight) {
       for (let y = height - 2; y >= 0; y--) {
         for (let x = 0; x < width; x++) {
-          particlesRegistry[newGrid[y * width + x]]?.behavior?.(newGrid, width, height, x, y, gameState);
+          const cellVal = newGrid[y * width + x];
+          const pid = getParticleId(cellVal);
+          particlesRegistry[pid]?.behavior?.(newGrid, width, height, x, y, gameState);
         }
       }
   } else {
       for (let y = height - 2; y >= 0; y--) {
         for (let x = width - 1; x >= 0; x--) {
-          particlesRegistry[newGrid[y * width + x]]?.behavior?.(newGrid, width, height, x, y, gameState);
+          const cellVal = newGrid[y * width + x];
+          const pid = getParticleId(cellVal);
+          particlesRegistry[pid]?.behavior?.(newGrid, width, height, x, y, gameState);
         }
     }
   }

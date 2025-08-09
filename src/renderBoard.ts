@@ -2,7 +2,7 @@ import type { GameState } from './GameState';
 import { particlesRegistry } from './particles/particlesRegistry';
 import { UiState } from './UIState';
 import { tools } from './tools';
-import { areParticlesEqual } from './utils';
+import { areParticlesEqual, getParticleId } from './utils';
 
 // Cached ImageData for the square game area
 let imageData: ImageData;
@@ -48,8 +48,9 @@ function renderParticlesToImage(gameState: GameState, size: number) {
   // Fill pixels
   for (let gy = 0; gy < height; gy++) {
     for (let gx = 0; gx < width; gx++) {
-      const type = gameState.grid[gy * width + gx];
-      const colorSpec = particlesRegistry[type].color;
+      const particle = gameState.grid[gy * width + gx];
+      const particleId = getParticleId(particle);
+      const colorSpec = particlesRegistry[particleId].color;
       const [r, g, b, a] = (typeof colorSpec === 'function' ? colorSpec(gameState) : colorSpec);
 
       const startX = Math.floor(gx * cellW);
